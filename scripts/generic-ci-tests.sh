@@ -150,27 +150,4 @@ case "$TEST_SUITE" in
     "lms-unit"|"cms-unit"|"pavelib-unit")
         $TOX bash scripts/unit-tests.sh
         ;;
-
-    "js-unit")
-        $TOX paver test_js --coverage
-        $TOX paver diff_coverage
-        ;;
-
-    "pavelib-js-unit")
-        $TOX paver test_js --coverage --skip-clean || { EXIT=1; }
-        paver test_lib --skip-clean $PAVER_ARGS || { EXIT=1; }
-
-        # This is to ensure that the build status of the shard is properly set.
-        # Because we are running two paver commands in a row, we need to capture
-        # their return codes in order to exit with a non-zero code if either of
-        # them fail. We put the || clause there because otherwise, when a paver
-        # command fails, this entire script will exit, and not run the second
-        # paver command in this case statement. So instead of exiting, the value
-        # of a variable named EXIT will be set to 1 if either of the paver
-        # commands fail. We then use this variable's value as our exit code.
-        # Note that by default the value of this variable EXIT is not set, so if
-        # neither command fails then the exit command resolves to simply exit
-        # which is considered successful.
-        exit $EXIT
-        ;;
 esac
