@@ -241,12 +241,33 @@ def _build_help_center_url(language):
     return support_url
 
 
+def _build_security_url(language):
+    """
+    Return the security policy page URL based on the language selected on the homepage.
+
+    :param language: selected language
+    :return: security URL
+    """
+    support_url = settings.SUPPORT_SITE_LINK
+    # Changing the site url only for the Edx.org and not for OpenEdx.
+    if support_url and 'support.edx.org' in support_url:
+        enabled_languages = {
+            'en': 'hc/en-us',
+            'es-419': 'hc/es-419'
+        }
+        if language in enabled_languages:
+            support_url = urljoin(support_url, enabled_languages[language])
+
+    return support_url
+
+
 def _footer_connect_links(language=settings.LANGUAGE_CODE):
     """Return the connect links to display in the footer. """
     links = [
         ("blog", (marketing_link("BLOG"), _("Blog"))),
         ("contact", (_build_support_form_url(full_path=True), _("Contact Us"))),
         ("help-center", (_build_help_center_url(language), _("Help Center"))),
+        ("security", (_build_security_url(language), _("Security"))),
     ]
 
     if language == settings.LANGUAGE_CODE:
