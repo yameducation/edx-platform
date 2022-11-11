@@ -443,8 +443,6 @@ django-pyfs==3.2.0
     # via -r requirements/edx/testing.txt
 django-ratelimit==3.0.1
     # via -r requirements/edx/testing.txt
-django-require @ git+https://github.com/openedx/django-require.git@0c54adb167142383b26ea6b3edecc3211822a776
-    # via -r requirements/edx/testing.txt
 django-sekizai==4.0.0
     # via
     #   -r requirements/edx/testing.txt
@@ -994,6 +992,8 @@ oauthlib==3.0.1
     #   requests-oauthlib
     #   social-auth-core
 openedx-calc==3.0.1
+    # via -r requirements/edx/testing.txt
+openedx-django-require==2.0.0
     # via -r requirements/edx/testing.txt
 openedx-events==3.0.1
     # via
