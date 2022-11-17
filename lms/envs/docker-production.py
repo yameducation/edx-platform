@@ -51,10 +51,11 @@ def get_docker_logger_config(log_dir='/var/tmp',
             },
             'tracking': {
                 'level': 'DEBUG',
-                'class': 'logging.handlers.SysLogHandler',
-                'address': ('localhost', 5140),
-                'facility': SysLogHandler.LOG_LOCAL1,
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/var/tmp/logs.log',
+                'backupCount': 1,
                 'formatter': 'raw',
+                'maxBytes': 10485760
             }
         },
         'loggers': {
