@@ -240,6 +240,7 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.azuread.AzureADOAuth2',
     'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.open_id.OpenIdAuth', # DL added to try to support Auth0
     'common.djangoapps.third_party_auth.identityserver3.IdentityServer3',
     'common.djangoapps.third_party_auth.dummy.DummyBackend',
     'common.djangoapps.third_party_auth.saml.SAMLAuthBackend',
