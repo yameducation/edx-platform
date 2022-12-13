@@ -2,7 +2,7 @@
 Auth0 implementation based on:
 https://auth0.com/docs/quickstart/webapp/django/01-login
 """
-from jose import jwt
+#from jose import jwt
 
 from social_core.backends.oauth import BaseOAuth2
 
@@ -37,9 +37,10 @@ class Auth0OAuth2(BaseOAuth2):
         jwks = self.get_json(self.api_path(".well-known/jwks.json"))
         issuer = self.api_path()
         audience = self.setting("KEY")  # CLIENT_ID
-        payload = jwt.decode(
-            id_token, jwks, algorithms=["RS256"], audience=audience, issuer=issuer
-        )
+        payload = {}
+        # payload = jwt.decode(
+        #     id_token, jwks, algorithms=["RS256"], audience=audience, issuer=issuer
+        # )
         fullname, first_name, last_name = self.get_user_names(payload["name"])
         return {
             "username": payload["nickname"],
