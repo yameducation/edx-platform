@@ -6,7 +6,7 @@ https://auth0.com/docs/quickstart/webapp/django/01-login
 
 from social_core.backends.oauth import BaseOAuth2
 
-class Auth0OAuth2(BaseOAuth2):
+class YamCustomOAuth2(BaseOAuth2):
     """Auth0 OAuth authentication backend"""
 
     name = "auth0"
