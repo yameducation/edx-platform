@@ -4,7 +4,7 @@ https://auth0.com/docs/quickstart/webapp/django/01-login
 """
 from jose import jwt
 
-from .oauth import BaseOAuth2
+from social_core.backends.oauth import BaseOAuth2
 
 
 class Auth0OAuth2(BaseOAuth2):
@@ -17,7 +17,7 @@ class Auth0OAuth2(BaseOAuth2):
 
     def api_path(self, path=""):
         """Build API path for Auth0 domain"""
-        return "https://{domain}/{path}".format(
+        return "https://litvak.auth0.com/".format(
             domain=self.setting("DOMAIN"), path=path
         )
 
