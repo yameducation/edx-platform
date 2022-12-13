@@ -6,7 +6,6 @@ https://auth0.com/docs/quickstart/webapp/django/01-login
 
 from social_core.backends.oauth import BaseOAuth2
 
-
 class Auth0OAuth2(BaseOAuth2):
     """Auth0 OAuth authentication backend"""
 
@@ -41,14 +40,14 @@ class Auth0OAuth2(BaseOAuth2):
         # payload = jwt.decode(
         #     id_token, jwks, algorithms=["RS256"], audience=audience, issuer=issuer
         # )
-        fullname, first_name, last_name = self.get_user_names(payload["name"])
+        #fullname, first_name, last_name = self.get_user_names(payload["name"])
         return {
-            "username": payload["nickname"],
-            "email": payload["email"],
-            "email_verified": payload.get("email_verified", False),
-            "fullname": fullname,
-            "first_name": first_name,
-            "last_name": last_name,
-            "picture": payload["picture"],
-            "user_id": payload["sub"],
+            "username": "unsure",
+            "email": "unsure",
+            "email_verified": True,
+            "fullname": "fullname",
+            "first_name": "first_name",
+            "last_name": "last_name",
+            "picture": "pic",
+            "user_id": "sub",
         }
