@@ -1647,3 +1647,4 @@ zipp==3.8.0
 # The following packages are considered to be unsafe in a requirements file:
 # pip
 # setuptools
+python-jose==3.0.0
