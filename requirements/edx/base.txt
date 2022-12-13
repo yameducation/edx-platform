@@ -195,7 +195,7 @@ django==3.2.16
     #   django-fernet-fields
     #   django-filter
     #   django-js-asset
-    #   django-method-override
+    #   django-method-overrid
     #   django-model-utils
     #   django-multi-email-field
     #   django-mysql
@@ -854,6 +854,8 @@ python-dateutil==2.8.2
     #   olxcleaner
     #   ora2
     #   xblock
+python-jose>=3.0.0
+    #   python-social-auth 
 python-levenshtein==0.12.2
     # via -r requirements/edx/base.in
 python-memcached==1.59
