@@ -9,7 +9,7 @@ from social_core.backends.oauth import BaseOAuth2
 class YamCustomOAuth2(BaseOAuth2):
     """Auth0 OAuth authentication backend"""
 
-    name = "auth0"
+    name = "yamedu"
     SCOPE_SEPARATOR = " "
     ACCESS_TOKEN_METHOD = "POST"
     EXTRA_DATA = [("picture", "picture")]
