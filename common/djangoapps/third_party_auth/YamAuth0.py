@@ -14,15 +14,15 @@ class YamAuth0(BaseOAuth2):
     name = "oa2-auth0"
 
     REDIRECT_STATE = False
-    AUTHORIZATION_URL = 'https://{domain}/authorize'
-    ACCESS_TOKEN_URL = 'https://{domain}/oauth/token'
+    AUTHORIZATION_URL = 'https://litvak.auth0.com/authorize'
+    ACCESS_TOKEN_URL = 'https://litvak.auth0.com/oauth/token'
     ACCESS_TOKEN_METHOD = 'POST'
-    REVOKE_TOKEN_URL = 'https://{domain}/logout'
+    REVOKE_TOKEN_URL = 'https://litvak.auth0.com/logout'
     REVOKE_TOKEN_METHOD = 'GET'
-    USER_DATA_URL = 'https://{domain}/userinfo'
+    USER_DATA_URL = 'https://litvak.auth0.com/userinfo'
 
     def _get_base_uri(self):
-        return settings.FEATURES.get('AUTH0_DOMAIN', u'auth0.com')
+        return "litvak.auth0.com"
 
     def authorization_url(self):
         return self.AUTHORIZATION_URL.format(domain=self._get_base_uri())

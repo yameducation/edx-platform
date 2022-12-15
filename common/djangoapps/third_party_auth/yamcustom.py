@@ -2,7 +2,7 @@
 Auth0 implementation based on:
 https://auth0.com/docs/quickstart/webapp/django/01-login
 """
-#from jose import jwt
+from jose import jwt
 
 from social_core.backends.oauth import BaseOAuth2
 
