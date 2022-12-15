@@ -8,11 +8,12 @@
 from social_core.backends.oauth import BaseOAuth2
 from django.utils.functional import cached_property
 from social_core.backends.oauth import BaseOAuth2
+from jose import jwt
 
 class YamAuth0(BaseOAuth2):
     """Auth0 OAuth authentication backend"""
 
-    name = "auth0-custom"
+    name = "auth0-yam-embedd"
     SCOPE_SEPARATOR = " "
     ACCESS_TOKEN_METHOD = "POST"
     EXTRA_DATA = [("picture", "picture")]
