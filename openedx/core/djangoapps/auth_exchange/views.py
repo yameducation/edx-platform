@@ -120,13 +120,17 @@ class LoginWithAccessTokenView(APIView):
                 return backend_path
 
     @staticmethod
-    def _is_grant_password(access_token):
+    def _is_privileged_application(access_token):
         """
-        Check if the access token provided is DOT based and has password type grant.
+        Check if the access token provided is DOT based and has password type grant, or if 'skip_authorization'
+        has been enabled, implying this is a trusted application.
         """
         token_query = dot_models.AccessToken.objects.select_related('user')
         dot_token = token_query.filter(token=access_token).first()
-        if dot_token and dot_token.application.authorization_grant_type == dot_models.Application.GRANT_PASSWORD:
+        if dot_token and (
+            dot_token.application.authorization_grant_type == dot_models.Application.GRANT_PASSWORD
+            or dot_token.application.skip_authorization
+        ):
             return True
 
         return False
@@ -145,10 +149,12 @@ class LoginWithAccessTokenView(APIView):
         if not hasattr(request.user, 'backend'):
             request.user.backend = self._get_path_of_arbitrary_backend_for_user(request.user)
 
-        if not self._is_grant_password(request.auth):
+        if not self._is_privileged_application(request.auth):
             raise AuthenticationFailed({
                 'error_code': 'non_supported_token',
-                'developer_message': 'Only support DOT type access token with grant type password. '
+                'developer_message': 'Only Django Oauth Toolkit access tokens for applications which '
+                                     'are trusted (with "skip_authentication" set to True, or with grant type '
+                                     'password) are supported.'
             })
 
         login(request, request.user)  # login generates and stores the user's cookies in the session
