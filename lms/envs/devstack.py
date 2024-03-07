@@ -562,6 +562,11 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:1999',  # frontend-app-authn
 ]
 
+# Using patched edx-django-utils
+OPENEDX_TELEMETRY = [
+    'edx_django_utils.monitoring.NewRelicBackend',
+    'edx_django_utils.monitoring.OpenTelemetryBackend',
+]
 
 ################# New settings must go ABOVE this line #################
 ########################################################################
