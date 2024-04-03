@@ -66,18 +66,21 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
 
     @classmethod
     def prefetch(cls, users):  # lint-amnesty, pylint: disable=missing-function-docstring
-        roles_by_user = defaultdict(set)
+        roles_by_user = {}
         get_cache(cls.CACHE_NAMESPACE)[cls.CACHE_KEY] = roles_by_user
 
         for role in CourseAccessRole.objects.filter(user__in=users).select_related('user'):
-            roles_by_user[role.user.id].add(role)
+            if not roles_by_user.get(role.user.id):
+                roles_by_user[role.user.id] = { role.course_id or 'no_course_id': set() }
+            roles_by_user[role.user.id][role.course_id or 'no_course_id'].add(role)
 
         users_without_roles = [u for u in users if u.id not in roles_by_user]
         for user in users_without_roles:
-            roles_by_user[user.id] = set()
+            roles_by_user[user.id] = {}
 
     @classmethod
     def get_user_roles(cls, user):
+        print('BulkRoleCache get_user_roles: ', user.id, cls.CACHE_NAMESPACE, cls.CACHE_KEY)
         return get_cache(cls.CACHE_NAMESPACE)[cls.CACHE_KEY][user.id]
 
 
@@ -89,9 +92,13 @@ class RoleCache:
         try:
             self._roles = BulkRoleCache.get_user_roles(user)
         except KeyError:
-            self._roles = set(
-                CourseAccessRole.objects.filter(user=user).all()
-            )
+            self._roles = {}
+            roles = CourseAccessRole.objects.filter(user=user).all()
+            for role in roles:
+                course_id = role.course_id.html_id() if role.course_id else 'no_course_id'
+                if not self._roles.get(course_id):
+                    self._roles[course_id] = set()
+                self._roles[course_id].add(role)
 
     @staticmethod
     def get_roles(role):
@@ -105,12 +112,18 @@ class RoleCache:
         Return whether this RoleCache contains a role with the specified role
         or a role that inherits from the specified role, course_id and org.
         """
-        return any(
+        res = False
+        course_id_string = course_id.html_id() if course_id else 'no_course_id'
+        course_roles = self._roles.get(course_id_string)
+        # import pdb; pdb.set_trace()
+        if not course_roles:
+            return False
+        res = any(
             access_role.role in self.get_roles(role) and
-            access_role.course_id == course_id and
             access_role.org == org
-            for access_role in self._roles
+            for access_role in course_roles
         )
+        return res
 
 
 class AccessRole(metaclass=ABCMeta):

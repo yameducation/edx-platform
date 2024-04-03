@@ -215,4 +215,15 @@ class HomePageLibrariesView(APIView):
 
         library_context = get_library_context(request)
         serializer = LibraryTabSerializer(library_context)
+        # import time
+        # sm = 0
+        # for i in range(20):
+        #     ot = time.time()
+        #     for j in range(100):
+        #         library_context = get_library_context(request)
+        #     nt = time.time()
+        #     sm += nt - ot
+        # avg = sm / 20
+        # print('avg time for 100 requests: ', avg)
+
         return Response(serializer.data)

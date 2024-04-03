@@ -979,6 +979,7 @@ MIDDLEWARE = [
 
     # This must be last so that it runs first in the process_response chain
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+    'django_cprofile_middleware.middleware.ProfilerMiddleware'
 ]
 
 EXTRA_MIDDLEWARE_CLASSES = []
@@ -1199,7 +1200,7 @@ CODE_JAIL_REST_SERVICE_READ_TIMEOUT = 3.5  # time in seconds
 
 ############################ DJANGO_BUILTINS ################################
 # Change DEBUG in your environment settings files, not here
-DEBUG = False
+DEBUG = True
 SESSION_COOKIE_SECURE = False
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_SERIALIZER = 'openedx.core.lib.session_serializers.PickleSerializer'
@@ -1548,6 +1549,9 @@ CELERY_QUEUES = {
     DEFAULT_PRIORITY_QUEUE: {},
     LOW_PRIORITY_QUEUE: {},
 }
+
+DJANGO_CPROFILE_MIDDLEWARE_REQUIRE_STAFF = False
+
 
 # Queues configuration
 
