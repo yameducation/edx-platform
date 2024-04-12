@@ -6,3 +6,10 @@ requests_mock
 responses
 mock
 ddt
+
+# This is a subdependency of one of our dependencies
+# but we need to not install it on newer versions of python
+# so we explictily declare it here and restrict it to older
+# versions of python.
+# This can be removed after we drop Python 3.8 support (After Redwood is cut)
+backports.zoneinfo;python_version<"3.9"
