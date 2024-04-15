@@ -86,19 +86,22 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
 
 class RoleCache:
     """
-    A cache of the CourseAccessRoles held by a particular user
+    A cache of the CourseAccessRoles held by a particular user.
     """
     def __init__(self, user):
         try:
-            self._roles = BulkRoleCache.get_user_roles(user)
+            self._roles_by_course_id = BulkRoleCache.get_user_roles(user)
+            self._roles = set()
         except KeyError:
-            self._roles = {}
+            self._roles_by_course_id = {}
             roles = CourseAccessRole.objects.filter(user=user).all()
             for role in roles:
                 course_id = role.course_id.html_id() if role.course_id else 'no_course_id'
-                if not self._roles.get(course_id):
-                    self._roles[course_id] = set()
-                self._roles[course_id].add(role)
+                if not self._roles_by_course_id.get(course_id):
+                    self._roles_by_course_id[course_id] = set()
+                self._roles_by_course_id[course_id].add(role)
+        for roles_for_course in self._roles_by_course_id.values():
+            self._roles.update(roles_for_course)
 
     @staticmethod
     def get_roles(role):
@@ -107,6 +110,13 @@ class RoleCache:
         """
         return ACCESS_ROLES_INHERITANCE.get(role, set()) | {role}
 
+    # TODO: test that this works as expected
+    def get_all_roles_set(self):
+        return self._roles
+
+    def get_roles_by_course_id(self):
+        return self._roles_by_course_id
+
     def has_role(self, role, course_id, org):
         """
         Return whether this RoleCache contains a role with the specified role
@@ -114,7 +124,7 @@ class RoleCache:
         """
         res = False
         course_id_string = course_id.html_id() if course_id else 'no_course_id'
-        course_roles = self._roles.get(course_id_string)
+        course_roles = self._roles_by_course_id.get(course_id_string)
         # import pdb; pdb.set_trace()
         if not course_roles:
             return False

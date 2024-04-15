@@ -54,7 +54,6 @@ from common.djangoapps.student.roles import (
     GlobalStaff,
     UserBasedRole,
     OrgStaffRole,
-    BulkRoleCache,
     RoleCache,
 )
 from common.djangoapps.util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
@@ -665,10 +664,6 @@ def _accessible_libraries_iter(user, org=None):
     print('avg time for 10_000 requests: ', avg)
     user_has_role(user, CourseStaffRole(libraries[0].location.library_key))
 
-    # BulkRoleCache.prefetch([user])
-    # roles = BulkRoleCache.get_user_roles(user)
-    # import pdb; pdb.set_trace()
-    # return []
     return (lib for lib in libraries if has_studio_read_access(user, lib.location.library_key))
 
 

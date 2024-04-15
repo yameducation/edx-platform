@@ -345,7 +345,7 @@ def get_course_enrollment_info(course_id, include_expired=False):
         return CourseSerializer(course, include_expired=include_expired).data
 
 
-def get_user_roles(username):
+def get_user_roles(username, by_course_id = False):
     """
     Returns a list of all roles that this user has.
     :param username: The id of the selected user.
@@ -356,7 +356,9 @@ def get_user_roles(username):
     if not hasattr(user, '_roles'):
         user._roles = RoleCache(user)
     role_cache = user._roles
-    return role_cache._roles
+    if by_course_id:
+        return role_cache.get_roles_by_course_id()
+    return role_cache.get_all_roles_set()
 
 
 def serialize_enrollments(enrollments):

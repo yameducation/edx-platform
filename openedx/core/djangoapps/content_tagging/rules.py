@@ -86,10 +86,18 @@ def _get_course_user_orgs(user: UserType, orgs: list[Organization]) -> list[Orga
         # pylint: disable=protected-access
         roles_cache = user._roles
         assert roles_cache
+
+        # roles_cache is now a dict where the keys are course_id or 'no-course-id' and the values are sets of roles.
+        # So before returning, we flatten this dict into a single set with all roles:
+
+        flat_roles_set = roles_cache.get_all_roles_set()
+
+        # TODO: test that this works as expected
+
         return any(
             access_role.role in roles_cache.get_roles(role_name) and
             access_role.org == org_name
-            for access_role in roles_cache._roles
+            for access_role in flat_roles_set
         )
 
     return [
