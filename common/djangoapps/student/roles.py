@@ -87,11 +87,17 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
 class RoleCache:
     """
     A cache of the CourseAccessRoles held by a particular user.
+    Internal data structures should be accessed by getter and setter methods.
+    _roles_by_course_id: This is the data structure as saved in the RequestCache.
+        It contains all roles for a user as a dict that's keyed by course_id.
+        The key "no_course_id" is used for all roles that are not associated with a course.
+    _roles: This is a set of all roles for a user, ungrouped. It's used for some types of
+        lookups and saved on initialization so that it doesn't need to be recalculated.
+
     """
     def __init__(self, user):
         try:
             self._roles_by_course_id = BulkRoleCache.get_user_roles(user)
-            self._roles = set()
         except KeyError:
             self._roles_by_course_id = {}
             roles = CourseAccessRole.objects.filter(user=user).all()
@@ -100,6 +106,7 @@ class RoleCache:
                 if not self._roles_by_course_id.get(course_id):
                     self._roles_by_course_id[course_id] = set()
                 self._roles_by_course_id[course_id].add(role)
+        self._roles = set()
         for roles_for_course in self._roles_by_course_id.values():
             self._roles.update(roles_for_course)
 
