@@ -65,7 +65,6 @@ def user_has_role(user, role):
 
     if role.has_user(user):
         return True
-    return False
     # If not, then check inferred permissions
     if (isinstance(role, (CourseStaffRole, CourseBetaTesterRole)) and
             CourseInstructorRole(role.course_key).has_user(user)):

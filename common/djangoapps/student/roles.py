@@ -6,7 +6,6 @@ adding users, removing users, and listing members
 
 import logging
 from abc import ABCMeta, abstractmethod
-from collections import defaultdict
 from contextlib import contextmanager
 
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
