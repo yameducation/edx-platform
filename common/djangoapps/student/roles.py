@@ -71,7 +71,7 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
 
         for role in CourseAccessRole.objects.filter(user__in=users).select_related('user'):
             if not roles_by_user.get(role.user.id):
-                roles_by_user[role.user.id] = { role.course_id or 'no_course_id': set() }
+                roles_by_user[role.user.id] = {role.course_id or 'no_course_id': set()}
             roles_by_user[role.user.id][role.course_id or 'no_course_id'].add(role)
 
         users_without_roles = [u for u in users if u.id not in roles_by_user]

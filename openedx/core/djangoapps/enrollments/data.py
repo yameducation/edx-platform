@@ -345,7 +345,7 @@ def get_course_enrollment_info(course_id, include_expired=False):
         return CourseSerializer(course, include_expired=include_expired).data
 
 
-def get_user_roles(username, by_course_id = False):
+def get_user_roles(username, by_course_id=False):
     """
     Returns a list of all roles that this user has.
     :param username: The id of the selected user.
