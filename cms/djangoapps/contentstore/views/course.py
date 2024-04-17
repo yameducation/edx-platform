@@ -644,24 +644,6 @@ def _accessible_libraries_iter(user, org=None):
         libraries = [] if org == '' else modulestore().get_libraries(org=org)
     else:
         libraries = modulestore().get_library_summaries()
-    # pylint: disable=protected-access
-    # if not hasattr(user, '_roles'):
-    #     # Cache a list of tuples identifying the particular roles that a user has
-    #     # Stored as tuples, rather than django models, to make it cheaper to construct objects for comparison
-    #     user._roles = RoleCache(user)
-    # No need to worry about ErrorBlocks - split's get_libraries() never returns them.
-    import time
-    sm = 0
-    for i in range(10):
-        ot = time.time()
-        for j in range(10000):
-            has_studio_read_access(user, libraries[0].location.library_key)
-            # user_has_role(user, CourseStaffRole(libraries[0].location.library_key))
-        nt = time.time()
-        sm += nt - ot
-    avg = sm / 10
-    print('avg time for 10_000 requests: ', avg)
-    user_has_role(user, CourseStaffRole(libraries[0].location.library_key))
 
     return (lib for lib in libraries if has_studio_read_access(user, lib.location.library_key))
 
