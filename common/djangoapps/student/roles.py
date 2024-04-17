@@ -129,7 +129,7 @@ class RoleCache:
         or a role that inherits from the specified role, course_id and org.
         """
         res = False
-        course_id_string = course_id.html_id() if course_id else 'no_course_id'
+        course_id_string = course_id.html_id() if course_id and getattr(course_id, 'html_id', False) else 'no_course_id'
         course_roles = self._roles_by_course_id.get(course_id_string)
         # import pdb; pdb.set_trace()
         if not course_roles:
