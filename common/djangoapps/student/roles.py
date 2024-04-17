@@ -22,6 +22,9 @@ REGISTERED_ACCESS_ROLES = {}
 # A mapping of roles to the roles that they inherit permissions from.
 ACCESS_ROLES_INHERITANCE = {}
 
+# The key used to store roles for a user in the cache that do not belong to a course or do not have a course id.
+ROLE_CACHE_UNGROUPED_COURSES_KEY = 'ungrouped'
+
 
 def register_access_role(cls):
     """
@@ -59,6 +62,21 @@ def strict_role_checking():
     ACCESS_ROLES_INHERITANCE.update(OLD_ACCESS_ROLES_INHERITANCE)
 
 
+def get_role_cache_course_key(course_id=None):
+    """
+    Get the cache key for the course key.
+    """
+    if not course_id:
+        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+    if not getattr(course_id, 'html_id', False):
+        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+    html_id = course_id.html_id()
+    if not html_id:
+        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+
+    return html_id
+
+
 class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
     CACHE_NAMESPACE = "student.roles.BulkRoleCache"
     CACHE_KEY = 'roles_by_user'
@@ -69,9 +87,17 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
         get_cache(cls.CACHE_NAMESPACE)[cls.CACHE_KEY] = roles_by_user
 
         for role in CourseAccessRole.objects.filter(user__in=users).select_related('user'):
-            if not roles_by_user.get(role.user.id):
-                roles_by_user[role.user.id] = {role.course_id or 'no_course_id': set()}
-            roles_by_user[role.user.id][role.course_id or 'no_course_id'].add(role)
+            user_id = role.user.id
+            course_id = get_role_cache_course_key(role.course_id)
+            if not roles_by_user.get(user_id):
+                roles_by_user[user_id] = {course_id: set()}
+            if not roles_by_user[user_id].get(course_id):
+                roles_by_user[user_id][course_id] = set()
+            roles_by_user[user_id][course_id].add(role)
+
+            if not roles_by_user.get(course_id):
+                roles_by_user[course_id] = set()
+            roles_by_user[course_id].add(role)
 
         users_without_roles = [u for u in users if u.id not in roles_by_user]
         for user in users_without_roles:
@@ -89,9 +115,11 @@ class RoleCache:
     Internal data structures should be accessed by getter and setter methods.
     _roles_by_course_id: This is the data structure as saved in the RequestCache.
         It contains all roles for a user as a dict that's keyed by course_id.
-        The key "no_course_id" is used for all roles that are not associated with a course.
+        The key ROLE_CACHE_UNGROUPED_COURSES_KEY is used for all roles
+        that are not associated with a course.
     _roles: This is a set of all roles for a user, ungrouped. It's used for some types of
-        lookups and saved on initialization so that it doesn't need to be recalculated.
+        lookups and collected from _roles_by_course_id on initialization
+        so that it doesn't need to be recalculated.
 
     """
     def __init__(self, user):
@@ -101,7 +129,7 @@ class RoleCache:
             self._roles_by_course_id = {}
             roles = CourseAccessRole.objects.filter(user=user).all()
             for role in roles:
-                course_id = role.course_id.html_id() if role.course_id else 'no_course_id'
+                course_id = get_role_cache_course_key(role.course_id)
                 if not self._roles_by_course_id.get(course_id):
                     self._roles_by_course_id[course_id] = set()
                 self._roles_by_course_id[course_id].add(role)
@@ -129,7 +157,7 @@ class RoleCache:
         or a role that inherits from the specified role, course_id and org.
         """
         res = False
-        course_id_string = course_id.html_id() if course_id and getattr(course_id, 'html_id', False) else 'no_course_id'
+        course_id_string = get_role_cache_course_key(course_id)
         course_roles = self._roles_by_course_id.get(course_id_string)
         # import pdb; pdb.set_trace()
         if not course_roles:

@@ -351,8 +351,10 @@ def get_user_roles(username, by_course_id=False):
     If you specify by_course_id=True, it will instead return a dictionary of course_id to roles,
     which has a better lookup time if you are looking for specific course ids.
     :param username: The id of the selected user.
-    :return: A set of all roles for all courses that this user has
-    or a dictionary of course_id to roles with the key "no_course_id" for roles that are not course specific.
+    :return: Either a set of all roles for all courses that this user has
+        or a dictionary of course_id to roles with the key 
+        ROLE_CACHE_UNGROUPED_COURSES_KEY (see common/djangoapps/student/roles.py)
+        for roles that are not course specific.
     """
     # pylint: disable=protected-access
     user = _get_user(username)
