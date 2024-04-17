@@ -46,7 +46,6 @@ from common.djangoapps.student.auth import (
     has_studio_write_access,
     has_studio_advanced_settings_access,
     is_content_creator,
-    user_has_role,
 )
 from common.djangoapps.student.roles import (
     CourseInstructorRole,
