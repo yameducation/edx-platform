@@ -6,6 +6,7 @@ Tests of student.roles
 import ddt
 from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.locator import LibraryLocatorV2
 
 from common.djangoapps.student.roles import (
     CourseBetaTesterRole,
@@ -21,7 +22,9 @@ from common.djangoapps.student.roles import (
     OrgContentCreatorRole,
     OrgInstructorRole,
     OrgStaffRole,
-    RoleCache
+    RoleCache,
+    get_role_cache_course_key,
+    ROLE_CACHE_UNGROUPED_COURSES_KEY
 )
 from common.djangoapps.student.tests.factories import AnonymousUserFactory, InstructorFactory, StaffFactory, UserFactory
 
@@ -161,7 +164,8 @@ class RolesTestCase(TestCase):
 @ddt.ddt
 class RoleCacheTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-class-docstring
 
-    IN_KEY = CourseKey.from_string('edX/toy/2012_Fall')
+    IN_KEY_STRING = 'edX/toy/2012_Fall'
+    IN_KEY = CourseKey.from_string(IN_KEY_STRING)
     NOT_IN_KEY = CourseKey.from_string('edX/toy/2013_Fall')
 
     ROLES = (
@@ -205,3 +209,38 @@ class RoleCacheTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-clas
     def test_empty_cache(self, role, target):  # lint-amnesty, pylint: disable=unused-argument
         cache = RoleCache(self.user)
         assert not cache.has_role(*target)
+
+    def test_get_role_cache_course_key_for_course_object_gets_string(self):
+        """
+        Given a valid course key object, get_role_cache_course_key
+        should return the string representation of the key.
+        """
+        course_string = 'edX/toy/2012_Fall'
+        key = CourseKey.from_string(course_string)
+        key = get_role_cache_course_key(key)
+        assert key == course_string
+
+    def test_get_role_cache_course_key_for_undefined_object_returns_default(self):
+        """
+        Given a value None, get_role_cache_course_key
+        should return the default key for ungrouped courses.
+        """
+        key = get_role_cache_course_key(None)
+        assert key == ROLE_CACHE_UNGROUPED_COURSES_KEY
+
+    def test_get_role_cache_course_key_for_undefined_attr_html_id(self):
+        """
+        Given an object without `html_id`, like LibraryLocatorV2, get_role_cache_course_key
+        should return the default key for ungrouped courses.
+        """
+        class CourseIdWithoutHtmlId:
+            test = True
+        locator = LibraryLocatorV2('edX', 'toy')
+        assert getattr(locator, 'html_id', None) is None
+        test_obj = CourseIdWithoutHtmlId()
+
+        key = get_role_cache_course_key(locator)
+        assert key == ROLE_CACHE_UNGROUPED_COURSES_KEY
+
+        key = get_role_cache_course_key(test_obj)
+        assert key == ROLE_CACHE_UNGROUPED_COURSES_KEY

@@ -66,13 +66,14 @@ def get_role_cache_course_key(course_id=None):
     """
     Get the cache key for the course key.
     """
+    default = ROLE_CACHE_UNGROUPED_COURSES_KEY
     if not course_id:
-        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+        return default
     if not getattr(course_id, 'html_id', False):
-        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+        return default
     html_id = course_id.html_id()
     if not html_id:
-        return ROLE_CACHE_UNGROUPED_COURSES_KEY
+        return default
 
     return html_id
 
