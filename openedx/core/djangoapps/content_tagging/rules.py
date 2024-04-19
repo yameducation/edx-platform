@@ -10,6 +10,7 @@ import rules
 from organizations.models import Organization
 
 from common.djangoapps.student.auth import has_studio_read_access, has_studio_write_access
+from common.djangoapps.student.role_helpers import get_course_roles, get_role_cache
 from common.djangoapps.student.roles import (
     CourseInstructorRole,
     CourseStaffRole,
@@ -79,25 +80,13 @@ def _get_course_user_orgs(user: UserType, orgs: list[Organization]) -> list[Orga
         """
         Returns True if the given user has the given role for the given org, OR for any courses in this org.
         """
-        # We use the user's RolesCache here to avoid re-querying.
-        # This cache gets populated the first time the user's permissions are checked (i.e when
-        # _get_content_creator_orgs is called).
-
-        # pylint: disable=protected-access
-        roles_cache = user._roles
-        assert roles_cache
-
-        # roles_cache is now a dict where the keys are course_id or 'no-course-id' and the values are sets of roles.
-        # So before returning, we flatten this dict into a single set with all roles:
-
-        flat_roles_set = roles_cache.get_all_roles_set()
-
-        # TODO: test that this works as expected
-
+        # We use the user's RoleCache here to avoid re-querying.
+        roles_cache = get_role_cache(user)
+        course_roles = get_course_roles(user)
         return any(
             access_role.role in roles_cache.get_roles(role_name) and
             access_role.org == org_name
-            for access_role in flat_roles_set
+            for access_role in course_roles
         )
 
     return [

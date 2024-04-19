@@ -9,6 +9,7 @@ from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locator import LibraryLocator, LibraryLocatorV2
 
 from common.djangoapps.student.roles import (
+    CourseAccessRole,
     CourseBetaTesterRole,
     CourseInstructorRole,
     CourseRole,
@@ -26,6 +27,7 @@ from common.djangoapps.student.roles import (
     get_role_cache_course_key,
     ROLE_CACHE_UNGROUPED_COURSES_KEY
 )
+from common.djangoapps.student.role_helpers import get_course_roles, has_staff_roles
 from common.djangoapps.student.tests.factories import AnonymousUserFactory, InstructorFactory, StaffFactory, UserFactory
 
 
@@ -50,6 +52,32 @@ class RolesTestCase(TestCase):
         assert not GlobalStaff().has_user(self.course_staff)
         assert not GlobalStaff().has_user(self.course_instructor)
         assert GlobalStaff().has_user(self.global_staff)
+
+    def test_has_staff_roles(self):
+        assert has_staff_roles(self.global_staff, self.course_key)
+        assert has_staff_roles(self.course_staff, self.course_key)
+        assert has_staff_roles(self.course_instructor, self.course_key)
+        assert not has_staff_roles(self.student, self.course_key)
+
+    def test_get_course_roles(self):
+        assert not list(get_course_roles(self.student))
+        assert not list(get_course_roles(self.global_staff))
+        assert list(get_course_roles(self.course_staff)) == [
+            CourseAccessRole(
+                user=self.course_staff,
+                course_id=self.course_key,
+                org=self.course_key.org,
+                role=CourseStaffRole.ROLE,
+            )
+        ]
+        assert list(get_course_roles(self.course_instructor)) == [
+            CourseAccessRole(
+                user=self.course_instructor,
+                course_id=self.course_key,
+                org=self.course_key.org,
+                role=CourseInstructorRole.ROLE,
+            )
+        ]
 
     def test_group_name_case_sensitive(self):
         uppercase_course_id = "ORG/COURSE/NAME"
