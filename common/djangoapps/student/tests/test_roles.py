@@ -6,7 +6,7 @@ Tests of student.roles
 import ddt
 from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey
-from opaque_keys.edx.locator import LibraryLocatorV2
+from opaque_keys.edx.locator import LibraryLocator, LibraryLocatorV2
 
 from common.djangoapps.student.roles import (
     CourseBetaTesterRole,
@@ -244,3 +244,52 @@ class RoleCacheTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-clas
 
         key = get_role_cache_course_key(test_obj)
         assert key == ROLE_CACHE_UNGROUPED_COURSES_KEY
+
+    def test_role_cache_get_roles_set(self):
+        """
+        Test that the RoleCache.get_all_roles_set() method returns a flat set of all roles for a user
+        and that the ._roles attribute is the same as the set to avoid legacy behavior being broken.
+        """
+        lib0 = LibraryLocator.from_string('library-v1:edX+quizzes')
+        course0 = CourseKey.from_string('edX/toy/2012_Summer')
+        course1 = CourseKey.from_string('edX/toy2/2013_Fall')
+        role_library_v1 = LibraryUserRole(lib0)
+        role_course_0 = CourseInstructorRole(course0)
+        role_course_1 = CourseInstructorRole(course1)
+
+        role_library_v1.add_users(self.user)
+        role_course_0.add_users(self.user)
+        role_course_1.add_users(self.user)
+
+        cache = RoleCache(self.user)
+        assert cache.has_role('library_user', lib0, 'edX')
+        assert cache.has_role('instructor', course0, 'edX')
+        assert cache.has_role('instructor', course1, 'edX')
+
+        assert len(cache.get_all_roles_set()) == 3
+        roles_set = cache.get_all_roles_set()
+        for role in roles_set:
+            assert role.course_id.course in ('quizzes', 'toy2', 'toy')
+
+        assert roles_set == cache._roles # pylint: disable=protected-access
+
+    def test_role_cache_get_roles_by_course_id(self):
+        """
+        Test that the RoleCache.get_roles_by_course_id_dict() method returns a dictionary of roles for a user
+        that are grouped by course_id or if ungrouped by the ROLE_CACHE_UNGROUPED_COURSES_KEY.
+        """
+        lib0 = LibraryLocator.from_string('library-v1:edX+quizzes')
+        course0 = CourseKey.from_string('edX/toy/2012_Summer')
+        course1 = CourseKey.from_string('edX/toy2/2013_Fall')
+        role_library_v1 = LibraryUserRole(lib0)
+        role_course_0 = CourseInstructorRole(course0)
+        role_course_1 = CourseInstructorRole(course1)
+
+        role_library_v1.add_users(self.user)
+        role_course_0.add_users(self.user)
+        role_course_1.add_users(self.user)
+
+        cache = RoleCache(self.user)
+        roles_dict = cache.get_roles_by_course_id()
+        assert len(roles_dict) == 3
+        assert roles_dict.get(ROLE_CACHE_UNGROUPED_COURSES_KEY) == 'abc'
