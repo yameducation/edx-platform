@@ -113,7 +113,8 @@ class BulkRoleCache:  # lint-amnesty, pylint: disable=missing-class-docstring
 class RoleCache:
     """
     A cache of the CourseAccessRoles held by a particular user.
-    Internal data structures should be accessed by getter and setter methods.
+    Internal data structures should be accessed by getter and setter methods;
+    don't use `_roles_by_course_id` or `_roles` directly.
     _roles_by_course_id: This is the data structure as saved in the RequestCache.
         It contains all roles for a user as a dict that's keyed by course_id.
         The key ROLE_CACHE_UNGROUPED_COURSES_KEY is used for all roles
