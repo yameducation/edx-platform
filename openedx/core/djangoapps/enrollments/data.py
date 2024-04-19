@@ -350,7 +350,7 @@ def get_user_roles(username, by_course_id=False):
     Returns a set of all roles that this user has.
     :param username: The id of the selected user.
     :return: Either a set of all roles for all courses that this user has
-        or a dictionary of course_id to roles with the key 
+        or a dictionary of course_id to roles with the key
         ROLE_CACHE_UNGROUPED_COURSES_KEY (see common/djangoapps/student/roles.py)
         for roles that are not course specific.
     """

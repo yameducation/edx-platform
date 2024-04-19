@@ -299,7 +299,7 @@ class RoleCacheTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-clas
         for role in roles_set:
             assert role.course_id.course in ('quizzes', 'toy2', 'toy')
 
-        assert roles_set == cache._roles # pylint: disable=protected-access
+        assert roles_set == cache._roles  # pylint: disable=protected-access
 
     def test_role_cache_get_roles_by_course_id(self):
         """
