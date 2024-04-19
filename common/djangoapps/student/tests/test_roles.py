@@ -284,12 +284,17 @@ class RoleCacheTestCase(TestCase):  # lint-amnesty, pylint: disable=missing-clas
         role_library_v1 = LibraryUserRole(lib0)
         role_course_0 = CourseInstructorRole(course0)
         role_course_1 = CourseInstructorRole(course1)
+        role_org_staff = OrgStaffRole('edX')
 
         role_library_v1.add_users(self.user)
         role_course_0.add_users(self.user)
         role_course_1.add_users(self.user)
+        role_org_staff.add_users(self.user)
 
         cache = RoleCache(self.user)
         roles_dict = cache.get_roles_by_course_id()
-        assert len(roles_dict) == 3
-        assert roles_dict.get(ROLE_CACHE_UNGROUPED_COURSES_KEY) == 'abc'
+        assert len(roles_dict) == 4
+        assert roles_dict.get(ROLE_CACHE_UNGROUPED_COURSES_KEY).pop().role == 'staff'
+        assert roles_dict.get('library-v1:edX+quizzes').pop().course_id.course == 'quizzes'
+        assert roles_dict.get('edX/toy/2012_Summer').pop().course_id.course == 'toy'
+        assert roles_dict.get('edX/toy2/2013_Fall').pop().course_id.course == 'toy2'
