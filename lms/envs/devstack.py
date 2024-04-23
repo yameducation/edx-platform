@@ -566,6 +566,7 @@ CSRF_TRUSTED_ORIGINS = [
 OPENEDX_TELEMETRY = [
     'edx_django_utils.monitoring.NewRelicBackend',
     'edx_django_utils.monitoring.OpenTelemetryBackend',
+    'edx_django_utils.monitoring.DatadogBackend',
 ]
 
 ################# New settings must go ABOVE this line #################
