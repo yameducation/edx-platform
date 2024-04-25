@@ -292,7 +292,7 @@ def _footer_navigation_links(language=settings.LANGUAGE_CODE):
         ("help-center", (_build_help_center_url(language), _("Help Center"))),
         ("contact", (_build_support_form_url(), _("Contact"))),
         ("careers", (marketing_link("CAREERS"), _("Careers"))),
-        ("donate", (marketing_link("DONATE"), _("Donate"))),
+        #("donate", (marketing_link("DONATE"), _("Donate"))),
     ]
 
     if language == settings.LANGUAGE_CODE:
