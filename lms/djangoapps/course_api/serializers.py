@@ -15,6 +15,8 @@ from openedx.core.djangoapps.content.course_overviews.models import \
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
 
+import logging
+log = logging.getLogger(__name__)
 
 class _MediaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """
@@ -123,8 +125,20 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
         Get the representation for SerializerMethodField `hidden`
         Represents whether course is hidden in LMS
         """
+
+        # Check whether current datetime > course end datetime if so, consider hidden = True
+        course_ended = False
+        if course_overview.end:
+            try: 
+                from datetime import datetime, timezone
+                if datetime.now(timezone.utc) > course_overview.end:
+                    course_ended = True
+            except Exception as e:
+                log.info(f"Exception to determine course hidden attribute for course: {course_overview.id} and exception: {e}")
+                pass
+
         catalog_visibility = course_overview.catalog_visibility
-        return catalog_visibility in ['about', 'none'] or course_overview.id.deprecated  # Old Mongo should be hidden
+        return course_ended or catalog_visibility in ['about', 'none'] or course_overview.id.deprecated # Old Mongo should be hidden
 
     def get_blocks_url(self, course_overview):
         """
