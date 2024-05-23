@@ -134,22 +134,11 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
                 if datetime.now(timezone.utc) > course_overview.end:
                     course_ended = True
             except Exception as e:
-                log.info(f"Course End -> Exception to determine course hidden attribute for course: {course_overview.id} and exception: {e}")
-                pass
-
-        # Check whether current datetime > course enrollment end datetime if so, consider hidden = True
-        course_enrollment_ended = False
-        if course_overview.enrollment_end:
-            try: 
-                from datetime import datetime, timezone
-                if datetime.now(timezone.utc) > course_overview.enrollment_end:
-                    course_enrollment_ended = True
-            except Exception as e:
-                log.info(f"Course Enrollment End -> Exception to determine course hidden attribute for course: {course_overview.id} and exception: {e}")
+                log.info(f"Exception to determine course hidden attribute for course: {course_overview.id} and exception: {e}")
                 pass
 
         catalog_visibility = course_overview.catalog_visibility
-        return course_ended or course_enrollment_ended or catalog_visibility in ['about', 'none'] or course_overview.id.deprecated # Old Mongo should be hidden
+        return course_ended or catalog_visibility in ['about', 'none'] or course_overview.id.deprecated # Old Mongo should be hidden
 
     def get_blocks_url(self, course_overview):
         """
