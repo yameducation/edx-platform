@@ -29,6 +29,17 @@
                             <span class="certificate-value"><%- course_title %></span>
                         </p>
                     <% } %>
+
+			<% if (partner) { %>
+                        <p class="course-title-override">
+                            <span class="certificate-label"><b><%- gettext('Partner name ') %>: </b></span>
+                            <span class="certificate-value"><%- partner %></span>
+                        </p>
+                    <% } %>
+
+
+
+
                  </div>
 
                 <div class='course-number-section pull-left'>

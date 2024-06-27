@@ -22,6 +22,7 @@ function($, _, Backbone, gettext,
         tagName: 'div',
         events: {
             'change .collection-name-input': 'setName',
+            'change #certificate-partner-course': 'setPartner',
             'change .certificate-description-input': 'setDescription',
             'change .certificate-course-title-input': 'setCourseTitle',
             'focus .input-text': 'onFocus',
@@ -122,7 +123,14 @@ function($, _, Backbone, gettext,
                 {silent: true}
             );
         },
-
+        setPartner: function(event) {
+            // Updates the indicated model field (still requires persistence on server)
+            if (event && event.preventDefault) { event.preventDefault(); }
+            this.model.set(
+                'partner_name', this.$('#certificate-partner-course').val(),
+                {silent: true}
+            );
+        },
         setDescription: function(event) {
             // Updates the indicated model field (still requires persistence on server)
             if (event && event.preventDefault) { event.preventDefault(); }

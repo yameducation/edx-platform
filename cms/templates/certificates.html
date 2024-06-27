@@ -10,6 +10,10 @@ from openedx.core.djangolib.js_utils import (
     dump_js_escaped_json, js_escaped_string
 )
 from six.moves.urllib.parse import quote
+import json
+from cms.djangoapps.course_creators.models import Partner
+#partners = json.dumps(list(Partner.objects.all().values('id', 'name')))
+partners = list(Partner.objects.all().values('id', 'name'))
 %>
 
 <%block name="title">${_("Course Certificates")}</%block>
@@ -24,7 +28,17 @@ from six.moves.urllib.parse import quote
 </%block>
 
 <%block name="jsextra">
+
+<script>
+window.partners = [
+        % for program in Partner.objects.all():
+            { id:  "${program.id}" , name: "${program.name}" },
+        % endfor
+    ];
+</script>
 <script type="text/javascript">
+window.partners = partners;
+window.selected_partner = '${partner_name}'
 window.CMS = window.CMS || {};
 CMS.URL = CMS.URL || {};
 CMS.User = CMS.User || {};
@@ -48,8 +62,24 @@ CMS.User.isGlobalStaff = '${is_global_staff | n, js_escaped_string}'=='True' ? t
   });
 % endif
 </%block>
-
 <%block name="content">
+<style>
+select#certificate-partner-course {
+    box-sizing: border-box;
+    background-color: #f2f2f2;
+    background-image: -webkit-linear-gradient(#f2f2f2, #fff);
+    background-image: linear-gradient(#f2f2f2, #fff);
+    padding: 6px 8px 8px;
+    border: 1px solid #b2b2b2;
+    border-radius: 2px;
+    background-color: #f2f2f2;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-family: 'Open Sans', sans-serif;
+    color: #4c4c4c;
+    outline: 0;
+    width: 100%;
+}
+</style>
   <div class="wrapper-mast wrapper">
     <header class="mast has-actions has-subtitle">
       <h1 class="page-header">

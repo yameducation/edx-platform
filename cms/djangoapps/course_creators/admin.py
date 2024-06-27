@@ -18,7 +18,8 @@ from cms.djangoapps.course_creators.models import (
     CourseCreator,
     send_admin_notification,
     send_user_notification,
-    update_creator_state
+    update_creator_state,
+    Partner
 )
 from cms.djangoapps.course_creators.views import update_course_creator_group, update_org_content_creator_role
 from common.djangoapps.edxmako.shortcuts import render_to_string
@@ -121,6 +122,7 @@ class CourseCreatorAdmin(admin.ModelAdmin):
 
 admin.site.register(CourseCreator, CourseCreatorAdmin)
 
+admin.site.register(Partner) # new
 
 @receiver(update_creator_state, sender=CourseCreator)
 def update_creator_group_callback(sender, **kwargs):  # pylint: disable=unused-argument

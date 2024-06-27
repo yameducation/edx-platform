@@ -562,7 +562,6 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
             course_id,
         )
         return _render_invalid_certificate(request, course_id, platform_name, configuration)
-
     # Get the active certificate configuration for this course
     # If we do not have an active certificate, we'll need to send the user to the "Invalid" screen
     # Passing in the 'preview' parameter, if specified, will return a configuration, if defined
@@ -594,7 +593,6 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
     # the language associated with the template.
     user_language = translation.get_language()
     certificate_language = custom_template_language if custom_template else user_language
-
     log.info(
         "certificate language is: %s for the course: %s",
         certificate_language,
@@ -606,9 +604,31 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
         context = {'user_language': user_language}
 
         _update_context_with_basic_info(context, course_id, platform_name, configuration)
+        data = active_configuration.get('signatories', [])
 
+        certificate_description = active_configuration.get("description","")
+        sign_name_1 = '' 
+        sign_title_1 = ''
+        sign_name_2 = ''
+        sign_title_2 = ''
+        if len(data):
+            if len(data) == 1:
+                sign_name_1 = data[0].get('name', '')
+                sign_title_1 = data[0].get('title', '')
+            else:
+                sign_name_1 = data[0].get('name', '')
+                sign_title_1 = data[0].get('title', '')
+                sign_name_2 = data[1].get('name', '')
+                sign_title_2 = data[1].get('title', '')
+
+        context['sign_name_1'] = sign_name_1
+        context['sign_name_2'] = sign_name_2
+        context['sign_title_1'] = sign_title_1
+        context['sign_title_2'] = sign_title_2
+        context['certificate_description'] = certificate_description
+       
         context['certificate_data'] = active_configuration
-
+        
         # Append/Override the existing view context values with any mode-specific ConfigurationModel values
         context.update(configuration.get(user_certificate.mode, {}))
 
@@ -751,6 +771,7 @@ def _render_valid_certificate(request, context, custom_template=None):
             encoding_errors='replace',
         )
         context = RequestContext(request, context)
+        
         return HttpResponse(template.render(context))
     else:
         return render_to_response("certificates/valid.html", context)

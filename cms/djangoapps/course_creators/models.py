@@ -115,3 +115,12 @@ def post_save_callback(sender, **kwargs):
         instance.orig_state = instance.state
         instance.orig_all_organizations = instance.all_organizations
         instance.save()
+
+class Partner(models.Model): # new
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='partner_logos/')
+    status = models.BooleanField(default=True,null = True, blank = True)
+    desc = models.TextField(null = True, blank = True)
+
+    def __str__(self):
+        return self.name

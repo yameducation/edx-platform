@@ -53,7 +53,7 @@ from ..utils import (
     reverse_course_url
 )
 from .assets import delete_asset
-
+from cms.djangoapps.course_creators.models import * # new
 CERTIFICATE_SCHEMA_VERSION = 1
 CERTIFICATE_MINIMUM_ID = 100
 
@@ -219,13 +219,27 @@ class CertificateManager:
         We use direct access here for specific keys in order to enforce their presence
         """
         certificate_data = certificate.certificate_data
+
+        try:
+            partner_id = certificate._certificate_data.get("partner_name")
+            partner_obj = Partner.objects.get(id=int(partner_id))
+            partner_name = partner_obj.name
+            partner_img_url = partner_obj.logo.url
+        except Exception as e:
+            partner_name = ''
+            partner_img_url = ''
+            logging.info(f"!!!!!!!!!!!!!!!!! Error in partner name {e}")
+
         certificate_response = {
             "id": certificate_data['id'],
             "name": certificate_data['name'],
             "description": certificate_data['description'],
             "is_active": certificate_data['is_active'],
             "version": CERTIFICATE_SCHEMA_VERSION,
-            "signatories": certificate_data['signatories']
+            "signatories": certificate_data['signatories'],
+            #"partner":certificate_data['partner'],
+            "partner":partner_name, # updating the partner name
+            "partner_img_url":partner_img_url
         }
 
         # Some keys are not required, such as the title override...
@@ -416,6 +430,12 @@ def certificates_list_handler(request, course_key_string):
             else:
                 certificate_web_view_url = None
             is_active, certificates = CertificateManager.is_activated(course)
+            try:
+                partner_name = certificates[0]["partner"]
+            except Exception as e:
+                logging.info(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 e")
+                partner_name = ""
+            partners = Partner.objects.all()
             return render_to_response('certificates.html', {
                 'context_course': course,
                 'certificate_url': certificate_url,
@@ -429,6 +449,8 @@ def certificates_list_handler(request, course_key_string):
                 'is_global_staff': GlobalStaff().has_user(request.user),
                 'certificate_activation_handler_url': activation_handler_url,
                 'mfe_proctored_exam_settings_url': get_proctored_exam_settings_url(course.id),
+                'partner':[{"id": partner_obj.id, "name": partner_obj.name} for partner_obj in partners],
+                'partner_name' : partner_name
             })
         elif "application/json" in request.META.get('HTTP_ACCEPT'):
             # Retrieve the list of certificates for the specified course
@@ -498,7 +520,6 @@ def certificates_detail_handler(request, course_key_string, certificate_id):
             new_certificate = CertificateManager.deserialize_certificate(course, request.body)
         except CertificateValidationError as err:
             return JsonResponse({"error": str(err)}, status=400)
-
         serialized_certificate = CertificateManager.serialize_certificate(new_certificate)
         cert_event_type = 'created'
         if match_cert:
