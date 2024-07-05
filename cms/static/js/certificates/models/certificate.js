@@ -19,7 +19,7 @@ function(_, Backbone, BackboneRelational, BackboneAssociations, gettext, CoffeeS
         defaults: {
             // Metadata fields currently displayed in web forms
             course_title: '',
-
+            partner :'',
             // Metadata fields not currently displayed in web forms
             name: 'Name of the certificate',
             description: 'Description of the certificate',

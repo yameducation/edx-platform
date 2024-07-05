@@ -102,6 +102,7 @@ function($, _, Backbone, gettext,
                 id: this.model.get('id'),
                 uniqueId: _.uniqueId(),
                 name: this.model.get('name'),
+                partner_name: this.model.get('partner_name'),
                 description: this.model.get('description'),
                 course_title: this.model.get('course_title'),
                 org_logo_path: this.model.get('org_logo_path'),
@@ -156,6 +157,7 @@ function($, _, Backbone, gettext,
             this.setName();
             this.setDescription();
             this.setCourseTitle();
+            this.setPartner();
             return this;
         }
     });

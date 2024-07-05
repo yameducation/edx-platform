@@ -611,20 +611,27 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
         sign_title_1 = ''
         sign_name_2 = ''
         sign_title_2 = ''
+        sign_img_1 = ''
+        sign_img_2 = ''
         if len(data):
             if len(data) == 1:
                 sign_name_1 = data[0].get('name', '')
                 sign_title_1 = data[0].get('title', '')
+                sign_img_1 = data[0].get('signature_image_path', '')
             else:
                 sign_name_1 = data[0].get('name', '')
                 sign_title_1 = data[0].get('title', '')
+                sign_img_1 = data[0].get('signature_image_path', '')
                 sign_name_2 = data[1].get('name', '')
                 sign_title_2 = data[1].get('title', '')
+                sign_img_2 = data[0].get('signature_image_path', '')
 
         context['sign_name_1'] = sign_name_1
         context['sign_name_2'] = sign_name_2
         context['sign_title_1'] = sign_title_1
         context['sign_title_2'] = sign_title_2
+        context['sign_img_1'] = sign_img_1
+        context['sign_img_2'] = sign_img_2
         context['certificate_description'] = certificate_description
        
         context['certificate_data'] = active_configuration
@@ -771,7 +778,6 @@ def _render_valid_certificate(request, context, custom_template=None):
             encoding_errors='replace',
         )
         context = RequestContext(request, context)
-        
         return HttpResponse(template.render(context))
     else:
         return render_to_response("certificates/valid.html", context)

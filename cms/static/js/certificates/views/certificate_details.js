@@ -34,6 +34,7 @@ function($, _, str, gettext, BaseView, SignatoryModel, SignatoryDetailsView, Vie
         initialize: function() {
             // Set up the initial state of the attributes set for this model instance
             this.showDetails = true;
+            this.partner = "";
             this.listenTo(this.model, 'change', this.render);
         },
 
