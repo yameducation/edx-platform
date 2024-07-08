@@ -72,8 +72,3 @@
     </div>
 </form>
 
-<script>
-$("#certificate-partner-course").change(function () {
-    window.selected_partner = $('#certificate-partner-course option:selected').text();
-})
-</script>
