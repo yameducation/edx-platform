@@ -20,6 +20,10 @@ partners = list(Partner.objects.all().values('id', 'name'))
 <%block name="bodyclass">is-signedin course view-certificates</%block>
 
 <%block name="header_extras">
+
+
+
+
 % for template_name in ["certificate-details", "certificate-editor", "signatory-editor", "signatory-details", "basic-modal", "modal-button", "list", "upload-dialog", "certificate-web-preview", "signatory-actions"]:
   <script type="text/template" id="${template_name}-tpl">
     <%static:include path="js/${template_name}.underscore" />
@@ -39,6 +43,7 @@ window.partners = [
 <script type="text/javascript">
 window.partners = partners;
 window.selected_partner = '${partner_name}'
+window.partner = '${partner_name}'
 window.CMS = window.CMS || {};
 CMS.URL = CMS.URL || {};
 CMS.User = CMS.User || {};
@@ -46,7 +51,6 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}';
 CMS.User.isGlobalStaff = '${is_global_staff | n, js_escaped_string}'=='True' ? true : false;
 </script>
 </%block>
-
 <%block name="requirejs">
 % if has_certificate_modes:
   require(["js/certificates/factories/certificates_page_factory"], function(CertificatesPageFactory) {

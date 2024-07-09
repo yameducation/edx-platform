@@ -624,7 +624,7 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
                 sign_img_1 = data[0].get('signature_image_path', '')
                 sign_name_2 = data[1].get('name', '')
                 sign_title_2 = data[1].get('title', '')
-                sign_img_2 = data[0].get('signature_image_path', '')
+                sign_img_2 = data[1].get('signature_image_path', '')
 
         context['sign_name_1'] = sign_name_1
         context['sign_name_2'] = sign_name_2

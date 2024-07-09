@@ -71,4 +71,11 @@
         <% } %>
     </div>
 </form>
-
+<script>
+const saveButton = document.querySelector('.action-primary');
+saveButton.addEventListener('click', function() {
+  setTimeout(function(){
+      window.location.reload(true);
+  },1000)
+});
+</script>
