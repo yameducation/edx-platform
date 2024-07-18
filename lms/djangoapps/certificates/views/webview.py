@@ -605,8 +605,9 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
 
         _update_context_with_basic_info(context, course_id, platform_name, configuration)
         data = active_configuration.get('signatories', [])
-
+        logging.info(f"************************************ {data} ****************************")
         certificate_description = active_configuration.get("description","")
+        logging.info(f"+++++++++++++++++++++++++++++++{certificate_description} +++++++++++++++++++++++++++")
         sign_name_1 = '' 
         sign_title_1 = ''
         sign_name_2 = ''
@@ -622,9 +623,11 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
                 sign_name_1 = data[0].get('name', '')
                 sign_title_1 = data[0].get('title', '')
                 sign_img_1 = data[0].get('signature_image_path', '')
+                logging.info(f"**************** {sign_img_1} ****************")
                 sign_name_2 = data[1].get('name', '')
                 sign_title_2 = data[1].get('title', '')
                 sign_img_2 = data[1].get('signature_image_path', '')
+                logging.info(f"**************** {sign_img_2} ****************")
 
         context['sign_name_1'] = sign_name_1
         context['sign_name_2'] = sign_name_2
