@@ -520,6 +520,8 @@ class GradebookView(GradeViewMixin, PaginatedAPIView):
 
         if is_masters_student():
             user_entry['full_name'] = user.profile.name
+        else : 
+            user_entry['full_name'] = user.profile.name
 
         external_user_key = get_external_key_by_user_and_course(user, course.id)
         if external_user_key:
