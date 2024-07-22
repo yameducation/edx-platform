@@ -238,6 +238,7 @@ class CertificateManager:
             "version": CERTIFICATE_SCHEMA_VERSION,
             "signatories": certificate_data['signatories'],
             #"partner":certificate_data['partner'],
+            "partner_name":partner_id,
             "partner":partner_name, # updating the partner name
             "partner_img_url":partner_img_url
         }
@@ -430,12 +431,15 @@ def certificates_list_handler(request, course_key_string):
             else:
                 certificate_web_view_url = None
             is_active, certificates = CertificateManager.is_activated(course)
+            
             try:
-                partner_name = certificates[0]["partner"]
+                partner_id = certificates[0]['partner_name']
+                partner_name = Partner.objects.get(id=int(partner_id)).name
             except Exception as e:
-                logging.info(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 e")
+                logging.info("!!!!!!!!!!!!!!!!!!!!!!! Exception ---------------------------- {}".format(e))
                 partner_name = ""
-            partners = Partner.objects.all()
+                partner_id = "99"
+            #partners = Partner.objects.all()
             return render_to_response('certificates.html', {
                 'context_course': course,
                 'certificate_url': certificate_url,
@@ -449,7 +453,8 @@ def certificates_list_handler(request, course_key_string):
                 'is_global_staff': GlobalStaff().has_user(request.user),
                 'certificate_activation_handler_url': activation_handler_url,
                 'mfe_proctored_exam_settings_url': get_proctored_exam_settings_url(course.id),
-                'partner':[{"id": partner_obj.id, "name": partner_obj.name} for partner_obj in partners],
+                #'partner':[{"id": partner_obj.id, "name": partner_obj.name} for partner_obj in partners],
+                'partner_id':partner_id,
                 'partner_name' : partner_name
             })
         elif "application/json" in request.META.get('HTTP_ACCEPT'):
@@ -459,6 +464,23 @@ def certificates_list_handler(request, course_key_string):
                 return JsonResponse(certificates, encoder=EdxJSONEncoder)
             elif request.method == 'POST':
                 # Add a new certificate to the specified course
+                try:
+                    body_unicode = request.body.decode('utf-8')
+                    body_data = json.loads(body_unicode)
+                    p_id = body_data['partner_name']
+                    p_obj = Partner.objects.get(id=int(p_id))
+                    p_name = p_obj.name
+                    p_img_url = p_obj.logo.url
+                    body_data['partner'] = p_name
+                    body_data['partner_name'] = p_id
+                    body_data['partner_img_url'] = p_img_url
+                            
+                    modified_body_unicode = json.dumps(body_data)
+                    modified_body_bytes = modified_body_unicode.encode('utf-8')
+                    request._body = modified_body_bytes
+                except Exception as e:
+                    logging.info(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! exception - {e}")
+                    pass
                 try:
                     new_certificate = CertificateManager.deserialize_certificate(course, request.body)
                 except CertificateValidationError as err:
