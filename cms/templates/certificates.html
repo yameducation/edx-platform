@@ -12,8 +12,6 @@ from openedx.core.djangolib.js_utils import (
 from six.moves.urllib.parse import quote
 import json
 from cms.djangoapps.course_creators.models import Partner
-#partners = json.dumps(list(Partner.objects.all().values('id', 'name')))
-partners = list(Partner.objects.all().values('id', 'name'))
 %>
 
 <%block name="title">${_("Course Certificates")}</%block>
@@ -39,6 +37,7 @@ window.partners = [
             { id:  "${program.id}" , name: "${program.name}" },
         % endfor
     ];
+
 </script>
 <script type="text/javascript">
 window.partners = partners;
