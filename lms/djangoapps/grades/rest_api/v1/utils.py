@@ -199,9 +199,9 @@ class GradeViewMixin(DeveloperErrorViewMixin):
         Serialize a single grade to dict to use in Responses
         """
         return {
-            'username': user.username,
+            'username': user.profile.name,
             # per business requirements, email should only be visible for students in masters track only
-            'email': user.email if getattr(user, 'enrollment_mode', '') == 'masters' else '',
+            'email': user.email, #if getattr(user, 'enrollment_mode', '') == 'masters' else '',
             'course_id': str(course_key),
             'passed': course_grade.passed,
             'percent': course_grade.percent,
