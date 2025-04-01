@@ -134,7 +134,8 @@ class LoginWithAccessTokenView(APIView):
     @staticmethod
     def _ensure_access_token_has_password_grant(request):
         """
-        Ensures the access token provided has password type grant.
+        Check if the access token provided is DOT based and has password type grant, or if 'skip_authorization'
+        has been enabled, implying this is a trusted application.
         """
         if is_jwt_authenticated(request):
             jwt_payload = get_decoded_jwt_from_auth(request)
@@ -143,12 +144,14 @@ class LoginWithAccessTokenView(APIView):
         else:
             token_query = dot_models.AccessToken.objects.select_related('user')
             dot_token = token_query.filter(token=request.auth).first()
-            if dot_token and dot_token.application.authorization_grant_type == dot_models.Application.GRANT_PASSWORD:
-                return
+            if dot_token and (
+                dot_token.application.authorization_grant_type == dot_models.Application.GRANT_PASSWORD
+                or dot_token.application.skip_authorization
+            ):
 
         raise AuthenticationFailed({
             'error_code': 'non_supported_token',
-            'developer_message': 'Only access tokens with grant type password are supported.'
+            'developer_message': 'Only access tokens with grant type password or with "skip_authentication" set to True are supported.'
         })
 
     @staticmethod
