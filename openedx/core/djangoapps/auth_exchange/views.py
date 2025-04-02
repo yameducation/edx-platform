@@ -148,6 +148,7 @@ class LoginWithAccessTokenView(APIView):
                 dot_token.application.authorization_grant_type == dot_models.Application.GRANT_PASSWORD
                 or dot_token.application.skip_authorization
             ):
+                return
 
         raise AuthenticationFailed({
             'error_code': 'non_supported_token',
