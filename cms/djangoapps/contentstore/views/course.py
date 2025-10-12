@@ -704,9 +704,42 @@ def get_courses_accessible_to_user(request, org=None):
             returned), an empty string will result in no courses, and otherwise only courses with the
             specified org will be returned. The default value is None.
     """
+    logging.info(f"get_course_accessible_to_user")
+
+    logging.info(f"[Tenant Courses] Fetching courses for user={request.user} org={org}")
+
+    # --- Tenant-based org filtering ---
+    host = request.get_host().split(':')[0]
+    normalized_host = host.replace("studio.", "", 1) if host.startswith("studio.") else host
+
+    try:
+        tenant_config = TenantConfig.objects.get_configurations(domain=normalized_host)
+        allowed_orgs = tenant_config.get("lms_configs", {}).get("course_org_filter", [])
+    except TenantConfig.DoesNotExist:
+        allowed_orgs = []
+
+    logging.info(f"[Tenant Courses] Allowed orgs for {normalized_host}: {allowed_orgs}")
+
+    # If a tenant filter is defined → ignore `org` param and enforce tenant’s orgs
+    if allowed_orgs:
+        orgs_to_use = allowed_orgs
+    else:
+        # fallback to whatever was passed in (or None for all orgs)
+        orgs_to_use = [org] if org else None
+    logging.info(f'org to useeeeeee {orgs_to_use}')
+
     if GlobalStaff().has_user(request.user):
+        if orgs_to_use:
+            courses = []
+            for o in orgs_to_use:
+                iter_courses, in_process_course_actions = _accessible_courses_summary_iter(request, org=o)
+                courses.extend(iter_courses)
+        else:
+            courses, in_process_course_actions = _accessible_courses_summary_iter(request)
+
+        logging.info(f'course in if partttttt {courses}')
         # user has global access so no need to get courses from django groups
-        courses, in_process_course_actions = _accessible_courses_summary_iter(request, org)
+        #courses, in_process_course_actions = _accessible_courses_summary_iter(request, org)
     else:
         try:
             courses, in_process_course_actions = _accessible_courses_list_from_groups(request)
@@ -714,6 +747,10 @@ def get_courses_accessible_to_user(request, org=None):
             # user have some old groups or there was some error getting courses from django groups
             # so fallback to iterating through all courses
             courses, in_process_course_actions = _accessible_courses_summary_iter(request)
+
+        if orgs_to_use:
+            courses = [c for c in courses if getattr(c, "org", None) in orgs_to_use]
+        logging.info(f'coursesss in else part {courses}')
     return courses, in_process_course_actions
 
 
