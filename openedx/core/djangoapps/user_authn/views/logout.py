@@ -17,7 +17,7 @@ from openedx.core.djangoapps.safe_sessions.middleware import mark_user_change_as
 from openedx.core.djangoapps.user_authn.cookies import delete_logged_in_cookies
 from openedx.core.djangoapps.user_authn.utils import is_safe_login_or_logout_redirect
 from common.djangoapps.third_party_auth import pipeline as tpa_pipeline
-
+import logging
 
 class LogoutView(TemplateView):
     """
@@ -30,7 +30,12 @@ class LogoutView(TemplateView):
     template_name = 'logout.html'
 
     # Keep track of the page to which the user should ultimately be redirected.
-    default_target = '/'
+    if getattr(settings, 'MY_YAM_URL', None):
+        logout_url = getattr(settings, 'MY_YAM_URL').rstrip('/') + '/logout'
+    else:
+        logout_url = '/'
+    logging.info(f'[Logout Url Changed here] {logout_url}')
+    default_target =  logout_url
     tpa_logout_url = ''
 
     def post(self, request, *args, **kwargs):
