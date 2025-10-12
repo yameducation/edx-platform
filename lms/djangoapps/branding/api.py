@@ -547,15 +547,35 @@ def get_url(name):
     :return: string containing page url.
     """
     # If a configuration URL override exists, return it.  Otherwise return the marketing URL.
+    try:
+        site_config = configuration_helpers.get_current_site_configuration()
+        if site_config:
+            logging.info(f"Site ID: {site_config.site.id}")
+            logging.info(f"Site Domain: {site_config.site.domain}")
+            logging.info(f"Full Configuration JSON: {site_config.site_values}")
+        else:
+            logging.info("No site configuration found for this domain.")
+    except Exception as e:
+        logging.error(f"Error fetching site configuration: {e}")
+    logging.info("====================================")
+    logging.info(f'configuration_urllllllllllll {configuration_helpers}')
     configuration_url = get_configuration_url(name)
-    if configuration_url != EMPTY_URL:
+    logging.info(f'configuration_urllllllllllll {configuration_url}')
+    if configuration_url and configuration_url != EMPTY_URL and configuration_url != '#':
         return configuration_url
 
+    url = marketing_link(name)
+    if url:
+        return url
+    """
+    if configuration_url != EMPTY_URL:
+        return configuration_url
+    
     # get marketing link, if marketing is disabled then platform url will be used instead.
     url = marketing_link(name)
 
     return url or EMPTY_URL
-
+    """
 
 def get_base_url(is_secure):
     """
@@ -642,7 +662,11 @@ def get_home_url():
     """
     Return Dashboard page url
     """
-    return reverse('dashboard')
+    logging.info(f'settings attrrr {dir(settings)}  {settings.MY_YAM_URL}')
+    try:
+        return settings.MY_YAM_URL
+    except:
+        return reverse('dashboard')
 
 
 def get_logo_url_for_email():

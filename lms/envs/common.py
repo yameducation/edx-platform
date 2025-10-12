@@ -2197,6 +2197,10 @@ MIDDLEWARE = [
     'lms.djangoapps.discussion.django_comment_client.middleware.AjaxExceptionMiddleware',
     'django.middleware.common.CommonMiddleware',
 
+
+     #eox_tenant middleware
+    'eox_tenant.middleware.CurrentSiteDatabase',
+
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
 
@@ -2277,6 +2281,7 @@ MIDDLEWARE = [
 
     # Handles automatically storing user ids in django-simple-history tables when possible.
     'simple_history.middleware.HistoryRequestMiddleware',
+
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
@@ -3326,6 +3331,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'openedx.core.djangolib.default_auth_classes.DefaultSessionAuthentication',
     ],
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #      'rest_framework.permissions.AllowAny',  # <-- CHANGE: Global AllowAny (temp; or use custom below)
+    #],
+
     'DEFAULT_PAGINATION_CLASS': 'edx_rest_framework_extensions.paginators.DefaultPagination',
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
