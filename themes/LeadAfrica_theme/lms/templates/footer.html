@@ -1,0 +1,281 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+  from datetime import datetime
+  from django.urls import reverse
+  from django.utils.translation import gettext as _
+  from lms.djangoapps.branding.api import get_footer
+  from openedx.core.djangoapps.lang_pref.api import footer_language_selector_is_enabled
+%>
+
+<% footer = get_footer(is_secure=is_secure) %>
+<% icp_license_info = getattr(settings, 'ICP_LICENSE_INFO', {})%>
+<%namespace name='static' file='static_content.html'/>
+<% footer_bg_color = getattr(settings, 'FOOTER_BG_COLOR' , "#111827" )%>
+<% platform_name = getattr(settings, 'PLATFORM_NAME' , "Yam Education") %>
+  <style>
+      .window-wrap {
+        position: relative;
+      }
+      body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 80vh;
+      }
+
+    .footer {
+      width: 99%;
+      min-height: 68px;
+      /* height: 68px; */
+      /*background-color: #111827;*/
+      background-color:${footer_bg_color};
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      padding-right: 5px;
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo-container {
+      display: flex;
+      gap: 18px;
+      font-size: 12px;
+      justify-content: flex-start;
+      padding-left: 30px;
+      align-items: center;
+      height: 100%;
+      width: 500px;
+    }
+
+    .footer-logo .footer-logo-link {
+      font-size: xx-large;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      width: 400px;
+      gap: 5%;
+      align-items: center;
+      height: 100%;
+      margin-right: 10px;
+    }
+
+    .footer-img-logo {
+      height: 28px;
+      max-width: 100%;
+      display: block;
+      vertical-align: middle;
+    }
+
+    .footer-links .footer-nav-link {
+      text-decoration: none;
+      list-style: none;
+      color: #fff;
+    }
+
+    .footer-links .footer-nav-link a {
+      color: #fff;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .footer-links .footer-nav-link a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    @media screen and (max-width: 908px) {
+      .footer {
+        height: min-content;
+        /* padding: 10px; */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        font-size: medium;
+        gap: 20px;
+      }
+
+      .footer-logo-container {
+        display: flex;
+        padding-top: 10px;
+        flex-direction: column;
+        gap: 0px;
+      }
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      width: 250px;
+      gap: 5%;
+      align-items: center;
+      height: 100%;
+    }
+
+    .footer {
+      width: 100%;
+      min-height: 68px;
+      /* height: 68px; */
+      /*background-color: #111827;*/
+      background-color: ${footer_bg_color};
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      padding-left: 0px;
+      padding-right: 0px;
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      left: 0;
+      right: 0;
+    }
+
+    .footer-img-logo {
+      height: 28px;
+      max-width: 100%;
+      display: block;
+      vertical-align: middle;
+    }
+   .copyrights p {
+        margin:0 !important
+    }
+    </style>
+
+
+
+<!-- Footer wrapped in if False so it does not render -->
+% if False:
+    % if uses_bootstrap:
+        <div class="wrapper wrapper-footer">
+            <footer id="footer" class="tutor-container"
+                % if bidi:
+                    dir=${bidi}
+                % endif
+            >
+                <div class="footer-top">
+                    <div class="powered-area">
+                        % if not hide_openedx_link:
+                            <ul class="logo-list">
+                                <li>Powered by:</li>
+                                <li>
+                                    <a href="https://docs.tutor.edly.io" rel="noopener" target="_blank">
+                                        <img src="${static.url('images/tutor-logo.png')}" alt="Runs on Tutor" width="57" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="${footer['openedx_link']['url']}" rel="noopener" target="_blank">
+                                        <img src="${static.url('images/openedx-logo.png')}" alt="${footer['openedx_link']['title']}" width="79" />
+                                    </a>
+                                </li>
+                            </ul>
+                        % endif
+                    </div>
+                    <nav class="nav-colophon" aria-label="${_('About')}">
+                        <ol>
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/blog">Blog</a></li>
+                            <li><a href="/donate">Donate</a></li>
+                            <li><a href="/tos">Terms of Service</a></li>
+                            <li><a href="/privacy">Privacy Policy</a></li>
+                            <li><a href="/help">Help</a></li>
+                            <li><a href="/contact">Contact Us</a></li>
+                        </ol>
+                    </nav>
+                </div>
+                <span class="copyright-site">
+                    Copyrights ©${datetime.now().year}. All Rights Reserved.
+                </span>
+            </footer>
+        </div>
+    % else:
+        <div class="wrapper wrapper-footer">
+            <footer id="footer" class="tutor-container"
+                % if bidi:
+                    dir=${bidi}
+                % endif
+            >
+                <div class="footer-top">
+                    <div class="powered-area">
+                        % if not hide_openedx_link:
+                            <ul class="logo-list">
+                                <li>Powered by:</li>
+                                <li>
+                                    <a href="https://docs.tutor.edly.io" rel="noopener" target="_blank">
+                                        <img src="${static.url('images/tutor-logo.png')}" alt="Runs on Tutor" width="57" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="${footer['openedx_link']['url']}" rel="noopener" target="_blank">
+                                        <img src="${static.url('images/openedx-logo.png')}" alt="${footer['openedx_link']['title']}" width="79" />
+                                    </a>
+                                </li>
+                            </ul>
+                        % endif
+                    </div>
+                    <nav class="nav-colophon" aria-label="${_('About')}">
+                        <ol>
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/blog">Blog</a></li>
+                            <li><a href="/donate">Donate</a></li>
+                            <li><a href="/tos">Terms of Service</a></li>
+                            <li><a href="/privacy">Privacy Policy</a></li>
+                            <li><a href="/help">Help</a></li>
+                            <li><a href="/contact">Contact Us</a></li>
+                        </ol>
+                    </nav>
+                </div>
+                <span class="copyright-site">
+                    Copyrights ©${datetime.now().year}. All Rights Reserved.
+                </span>
+            </footer>
+        </div>
+    % endif
+% endif
+
+<!-- Replacement content -->
+ <!-- footer section started -->
+    <footer class="footer">
+      <div class="footer-logo-container">
+        <div class="footer-logo">
+          <a href="" class="footer-logo-link">
+            <img src="${static.url('images/logo.png')}"  alt="footer-logo-img" class="footer-img-logo">
+          </a>
+        </div>
+        <span class="copyrights">
+          <p>Copyright &copy; ${datetime.now().year} ${platform_name}, Inc. All Rights Reserved.</p>
+        </span>
+      </div>
+    <div class="footer-links">
+      <li class="footer-nav-link"><a href="https://www.yam-edu.com/termofservice">Terms of Use</a></li>
+      <li class="footer-nav-link"><a href="https://www.yam-edu.com/privacypolicy">Privacy Notice</a></li>
+    </div>
+    </footer>
+    <!-- end of footer section  -->
+
+
+% if include_dependencies:
+  <%static:js group='base_vendor'/>
+  <%static:css group='style-vendor'/>
+  <%include file="widgets/segment-io.html" />
+  <%include file="widgets/segment-io-footer.html" />
+% endif
+
+% if footer_css_urls:
+  % for url in footer_css_urls:
+    <link rel="stylesheet" type="text/css" href="${url}"></link>
+  % endfor
+% endif

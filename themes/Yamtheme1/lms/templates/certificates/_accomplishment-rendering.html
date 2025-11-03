@@ -1,0 +1,301 @@
+<%page expression_filter="h"/>
+<%! from django.utils.translation import gettext as _ %>
+<%namespace name='static' file='../static_content.html'/>
+<%
+course_mode_class = course_mode if course_mode else ''
+%>
+
+
+<link id="default-stylesheet" rel="stylesheet" href="${static.url('yam-certificate/style.css')}">
+
+  <script>
+    function isMac() {
+      return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    }
+
+    function isSafari() {
+      var ua = navigator.userAgent.toLowerCase();
+      return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('crios') && !ua.includes('fxios');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (isMac() && isSafari()) {
+        // Remove the default stylesheet
+        var defaultStylesheet = document.getElementById('default-stylesheet');
+        if (defaultStylesheet) {
+          defaultStylesheet.parentNode.removeChild(defaultStylesheet);
+        }
+
+        // Add the Safari-specific stylesheet
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '${static.url("yam-certificate/safaristyle.css")}';
+        document.head.appendChild(link);
+      }
+    });
+  </script>
+
+
+<main class="accomplishment accomplishment-main"></main>
+<style>
+
+@media print {
+  @page {
+  size: landscape;
+  }
+}
+
+</style>
+
+
+% if False:
+    <div class="wrapper-accomplishment-rendering">
+        <div class="accomplishment-rendering">
+            <span class="deco-corner deco-corner-tl"></span>
+            <span class="deco-corner deco-corner-tr"></span>
+            <span class="deco-corner deco-corner-bl"></span>
+            <span class="deco-corner deco-corner-br"></span>
+
+            <div class="accomplishment-type">
+                <span class="accomplishment-type-symbol">
+                    <img class="src" src="/static/certificates/images/ico-${course_mode_class}.png" alt="Image for course mode of type ${course_mode_class}">
+                </span>
+
+                <span class="accomplishment-type-label hd-3">${document_title}</span>
+            </div>
+
+            <div class="wrapper-statement-and-signatories">
+                <div class="accomplishment-statement">
+                    <p class="accomplishment-statement-lead">
+                        <strong class="accomplishment-recipient hd-1 emphasized">${accomplishment_copy_name}</strong>
+                        <span class="accomplishment-summary copy copy-lead">${accomplishment_copy_description_full}</span>
+
+                        <span class="accomplishment-course hd-1 emphasized">
+                            <span class="accomplishment-course-org">${accomplishment_copy_course_org}  </span>
+                            <span class="accomplishment-course-number">${course_number}</span>:
+                            <span class="accomplishment-course-name">${accomplishment_copy_course_name}</span>
+                        </span>
+                    </p>
+
+                    <p class="accomplishment-statement-detail copy copy-lead">${accomplishment_copy_course_description}</p>
+                </div>
+
+                % if mode != 'base':
+                <div class="accomplishment-signatories">
+                    <h3 class="accomplishment-signatories-title sr-only">${_("Noted by")}</h3>
+
+                    <div class="wrapper-signatories">
+                        <div class="list-signatories">
+                            % if certificate_data:
+                                % for signatory in certificate_data.get('signatories', []):
+                                    % if signatory.get('signature_image_path'):
+                                        <div class="signatory">
+                                            <img class="signatory-signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
+
+                                            <h4 class="signatory-name hd-5">${signatory['name']}</h4>
+                                            <p class="signatory-credentials copy copy-micro">
+                                                <span class="role">${signatory['title']}</span>
+                                                <span class="organization">${signatory['organization']}</span>
+                                            </p>
+                                        </div>
+                                    % endif
+                                % endfor
+                            % endif
+                        </div>
+                    </div>
+                </div>
+                % endif
+            </div>
+
+            <div class="accomplishment-orgs">
+                <h3 class="accomplishment-orgs-title sr-only">${_("Supported by the following organizations")}</h3>
+
+                <ul class="wrapper-orgs list-orgs">
+                    <li class="wrapper-organization">
+                        <div class="organization organization-edX">
+                            <img class="organization-logo" src="${logo_src}" alt="${platform_name}">
+                        </div>
+                    </li>
+
+                    % if organization_logo:
+                    <li class="wrapper-organization">
+                        <div class="organization">
+                            <img class="organization-logo" src="${organization_logo.url}" alt="${platform_name}">
+                        </div>
+                    </li>
+                    % endif
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper-accomplishment-metadata">
+        <div class="accomplishment-metadata">
+            <h2 class="accomplishment-metadata-title hd-6">${accomplishment_copy_more_about}</h2>
+
+            <div class="wrapper-metadata">
+                <dl class="metadata accomplishment-recipient">
+                    <dt class="label sr-only">${_("Awarded to:")}</dt>
+                    <dd class="value copy copy-meta">
+                        <span class="recipient-img">
+                            <img class="src" src="/static/certificates/images/demo-user-profile.png" alt="Recipient Image">
+                        </span>
+                        <div class="recipient-details">
+                            <h3 class="recipient-name">${accomplishment_copy_name}</h3>
+                            <p class="recipient-username">${accomplishment_copy_username} @ ${platform_name}</p>
+                        </div>
+                    </dd>
+                </dl>
+                <dl class="metadata accomplishment-id">
+                    <dt class="label copy copy-meta">${certificate_id_number_title}:</dt>
+                    <dd class="value copy copy-base">${certificate_id_number}</dd>
+                </dl>
+                <dl class="metadata accomplishment-date">
+                    <dt class="label copy copy-meta">${certificate_date_issued_title}</dt>
+                    <dd class="value copy copy-base">${certificate_date_issued}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+% endif
+<center>
+
+
+% if certificate_data and certificate_data.get('partner_img_url'):
+ <div class="main-certificate-wrapper">
+      <div class="certificate-section">
+        <div class="certificate-of-achivement">
+          %if course_mode_class == "verified":
+          <h1>
+            CERTIFICATE OF
+             COMPLETION
+          </h1>
+          %endif
+          %if course_mode_class == "honor":
+          <h1>
+            CERTIFICATE OF
+             ACHIEVEMENT
+          </h1>
+          %endif
+        </div>
+        <div class="certificate-description">
+          <p class="certify-that">This is to certify that</p>
+          <h2 class="certify-username">${accomplishment_copy_name}</h2>
+          <div id="line"></div>
+          <p class="completed-course">has successfully completed the course</p>
+          <h3 class="course-name">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+		<path d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path></svg>
+${accomplishment_copy_course_name}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z"></path></svg>
+          </h3>
+          <p class="certify-description">
+            ${certificate_description}
+          </p>
+        </div>
+        <div class="certificate-signature">
+          <div class="signature-1">
+          % if sign_name_1:
+           % if sign_img_1:
+            <img src="${sign_img_1}" class="signature-img" alt="signature1">
+           % else:
+             <div class="signature-img"></div>
+           % endif
+            <div class="line"></div>
+            <div class="signature-wrapper">
+        <p> <strong>${sign_name_1} </strong></p>
+            <span>${sign_title_1}</span>
+            </div>
+          % endif
+          </div>
+          <div class="partner-logo-section">
+            <div class="partner-logo"></div>
+            <div class="partner-logo">
+              <img
+                src="${certificate_data.get('partner_img_url')}"
+                alt="partner-logo"
+                class="hoverZoomLink"
+              />
+            </div>
+          </div>
+          <div class="signatuare-2">
+          % if sign_name_2:
+           % if sign_img_2:
+            <img src="${sign_img_2}" class="signature-img" alt="signature1">
+           % else:
+             <div class="signature-img"></div>
+           % endif
+            <div class="line"></div>
+            <div class="signature-wrapper">
+           <p> <strong>${sign_name_2} </strong></p>
+            <span>${sign_title_2}</span>
+            </div>
+          % endif
+          </div>
+        </div>
+      </div>
+    </div>
+% else:
+	 <div class="main-certificate-wrapper2">
+      <div class="certificate-section">
+        <div class="certificate-of-achivement">
+           %if course_mode_class == "verified":
+          <h1>
+            CERTIFICATE OF
+             COMPLETION
+          </h1>
+          %endif
+          %if course_mode_class == "honor":
+          <h1>
+            CERTIFICATE OF
+             ACHIEVEMENT
+          </h1>
+          %endif
+        </div>
+        <div class="certificate-description">
+          <p clasAs="certify-that">This is to certify that</p>
+          <h2 class="certify-username">${accomplishment_copy_name}</h2>
+          <div id="line"></div>
+          <p class="completed-couBrse">has successfully completed the course</p>
+          <h3 class="course-name">&ldquo;${accomplishment_copy_course_name}&rdquo;</h3>
+          <p class="certify-description">${certificate_description}</p>
+        </div>
+        <div class="certificate-signature">
+          <div class="signature-1">
+          % if sign_name_1:
+           % if sign_img_1:
+            <img src="${sign_img_1}" class="signature-img" alt="signature1">
+           % else:
+             <div class="signature-img"></div>
+           % endif
+            <div class="line"></div>
+            <div class="signature-wrapper">
+	  <p> <strong>${sign_name_1} </strong></p>
+            <span>${sign_title_1}</span>
+            </div>
+          % endif
+          </div>
+          <div class="partner-logo-section">
+            <div class="partner-logo"></div>
+            <div class="partner-logo"></div>
+          </div>
+          <div class="signatuare-2">
+          % if sign_name_2:
+           % if sign_img_2:
+            <img src="${sign_img_2}" class="signature-img" alt="signature1">
+           % else:
+             <div class="signature-img"></div>
+           % endif
+            <div class="line"></div>
+            <div class="signature-wrapper">
+	      <p> <strong>${sign_name_2} </strong></p>
+            <span>${sign_title_2}</span>
+            </div>
+          % endif
+          </div>
+        </div>
+      </div>
+    </div>
+
+% endif
+</center>

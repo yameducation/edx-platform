@@ -1,0 +1,178 @@
+/* custom css added  */
+/* HomePage CSS*/
+/* Header Section in large screen */
+.mobile-nav-item.hidden-mobile.nav-item a {
+  color: #34a9dd;
+}
+a.sign-in-btn.btn {
+  background-color: #34a9dd;
+  color: #fff;
+  border: 1px solid #fff;
+  font-weight: 400;
+  padding: 5px 20px;
+}
+a.sign-in-btn.btn:hover {
+  background-color: #fff !important;
+  color: #34a9dd !important;
+}
+button.search-button {
+  background-color: #34a9dd !important;
+  border: 2px solid #34a9dd !important;
+}
+ 
+/* end of header */
+ 
+/*hero section*/
+button.search-button {
+  background-color: #34a9dd !important;
+  border: none !important;
+  outline: none !important;
+}
+ 
+.courses-container .courses .course .course-info .course-title {
+  color: #34a9dd !important;
+}
+.courses-container .courses .course .course-image .cover-image .learn-more {
+  background-color: #34a9dd !important;
+}
+ 
+.courses-container .courses .course {
+  border-bottom: 3px solid #34a9dd !important;
+}
+ 
+/* footer */
+nav.nav-colophon ol li a:hover {
+  color: #34a9dd !important;
+}
+ 
+nav.nav-legal ul li a {
+  color: #34a9dd !important;
+}
+ 
+/* header  of demonstration course*/
+.main .mobile-nav-item.hidden-mobile.nav-item a {
+  color: #34a9dd !important;
+}
+a.sign-in-btn.btn {
+  background-color: #34a9dd !important;
+  background-image: none !important;
+  border: none !important;
+  text-shadow: none !important;
+}
+a.sign-in-btn.btn:hover {
+  background-color: #fff !important;
+  color: #34a9dd !important;
+  border: 1px solid #34a9dd !important;
+}
+/* end of header */
+ 
+/* hero section of demonstration course */
+.main-cta .register {
+  background-color: #34a9dd !important;
+  background-image: none !important;
+  border: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+article.response p a {
+  color: #34a9dd !important;
+}
+ 
+/* end of hero section of demonstration course */
+ 
+/* footer of demonstration course */
+footer#footer-openedx .colophon .nav-colophon ol li a:hover {
+  color: #34a9dd !important;
+}
+nav.nav-legal ul li a {
+  color: #34a9dd !important;
+}
+/* end of footer of demonstraion course */
+ 
+/*login page*/
+ 
+.c6adbba8d.c4f3e77cb {
+  background-color: #34a9dd !important;
+}
+main.c4fea6c2a.login {
+  background-color: #34a9dd !important;
+}
+button.c91192a5a.c50deed59.cdb4306d0.c9ec81755.c18d716b8 {
+  background-color: #34a9dd !important;
+}
+a.c8861f699.c24d8133e {
+  color: #34a9dd;
+}
+/* end of login page */
+ 
+/* After LOGIn Learner Home Page CSS */
+button.pgn__stateful-btn.pgn__stateful-btn-state-default.mr-3.btn.btn-brand {
+  background-color: #34a9dd !important;
+  border-color: #34a9dd !important;
+}
+div#no-courses-content-view a.btn.btn-brand {
+  background-color: #34a9dd !important;
+  border-color: #34a9dd !important;
+}
+.pgn__card-body.m-auto.pr-2 a.brand-link {
+  color: #34a9dd !important;
+}
+ 
+/* end of Learner Home Page CSS */
+ 
+/* courses (discover courses) */
+button.button.postfix.discovery-submit {
+  background-color: #34a9dd !important;
+  border-color: #34a9dd !important;
+}
+button.facet-option.discovery-button:hover {
+  background-color: #34a9dd !important;
+  color: #fff !important;
+}
+a.btn.btn-primary {
+  background-color: #34a9dd !important;
+  border-color: #34a9dd !important;
+}
+/* end of discover courses */
+ 
+/* demonstration course */
+a.register {
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+a.instructor-info-action {
+  background-color: #34a9dd !important;
+  color: #fff !important;
+}
+/* end of demonstration course */
+.courses-container .courses .course .course-image .cover-image .learn-more {
+    background-color: #34a9dd !important;
+    border-color: #34a9dd !important;
+}
+
+
+
+
+
+
+
+
+/* header changes */
+header.global-header .header-logo a {
+    margin: 15px 0 0 40px !important;
+    float: left !important;
+    display: block !important;
+}
+@media (min-width: 992px) {
+    .global-header .nav-links .secondary {
+        float: right !important;
+        margin: 5px 40px 0 0 !important;
+    }
+}
+
+header.global-header .header-logo a .logo {
+  height:40px !important;
+}

@@ -1,0 +1,13 @@
+$primary:  #B50000;
+$primary-light: #f5a442;
+
+// Theme fonts
+$font-family-title: 'Inter', sans-serif;;
+$serif: Crimson;
+$f-sans-serif: Crimson, 'Open Sans','Helvetica Neue', Helvetica, Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+// Initialize the Open edX Bootstrap theme
+@import 'edx-bootstrap/sass/open-edx/theme';
+
+$drak: #111827;
+$light-drak: #374151;

@@ -1,0 +1,217 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+}
+
+.main {
+    height: 100vh;
+    width: 100vw;
+    background-image: url('Certificate-02.jpg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    position: absolute;
+}
+
+.info-1 .header h2 {
+    font-family: 'Blacker', sans-serif;
+    font-size: 27px;
+    letter-spacing: 4px;
+    position: relative;
+    top: 72.5px;
+    left: 505px;
+    color: #01284e;
+}
+
+.info-1 .header .s {
+    padding-left: 15px;
+}
+
+.info-2 {
+    font-family: "Poppins", sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 110px;
+    color: #01284e;
+}
+
+.info-2 .text {
+    font-size: 13px;
+    margin-top: 10px;
+    line-height: 18px;
+}
+
+.info-2 .name {
+    font-family: "Allura", cursive;
+    font-weight: 500;
+    font-size: 60px;
+    padding-left: 20px;
+    color: #06364c;
+}
+
+.info-2 .line {
+    position: relative;
+    height: 1.5px;
+    width: 40%;
+    background-color: #f7f9f8;
+}
+
+.info-2 .text-1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+    margin-left: 15px;
+    color: #03354a;
+}
+
+.info-2 .text span {
+    padding-left: 100px;
+}
+
+.info-3 {
+    font-family: 'Poppins', sans-serif;
+    text-transform: capitalize;
+    position: relative;
+    color: #01284e;
+    display: flex;
+    justify-content: start;
+    left: 27.5%;
+    gap: 280px;
+    top: 165px;
+}
+
+.info-3 .text-1 p {
+    font-size: 13px;
+    margin-left: 15px;
+}
+
+.info-3 .text-1 span {
+    font-size: 11px;
+    color: gray;
+}
+
+.info-3 .text-2 p {
+    font-size: 13px;
+}
+
+.info-3 .text-2 span {
+    font-size: 11px;
+    color: #928e8f;
+}
+
+.info-3 .line {
+    height: 0.8px;
+    width: 100%;
+    background-color: #01284e;
+}
+
+.image {
+    position: relative;
+    top: 120px;
+    left: 52.7%;
+}
+
+.image img {
+    height: 65px;
+    width: 65px;
+    border-radius: 50%;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Tablets */
+@media (max-width: 768px) {
+    .info-1 .header h2 {
+        font-size: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 60px;
+    }
+
+    .info-2 {
+        top: 90px;
+    }
+
+    .info-2 .name {
+        font-size: 50px;
+    }
+
+    .info-2 .text {
+        font-size: 12px;
+    }
+
+    .info-2 .text-1 {
+        font-size: 20px;
+    }
+
+    .info-3 {
+        flex-direction: column;
+        align-items: center;
+        left: 0;
+        top: 150px;
+        gap: 20px;
+    }
+
+    .info-3 .text-1, .info-3 .text-2 {
+        text-align: center;
+    }
+
+    .image {
+        left: 50%;
+        transform: translateX(-50%);
+        top: 100px;
+    }
+}
+
+/* Mobile Phones */
+@media (max-width: 480px) {
+    .info-1 .header h2 {
+        font-size: 20px;
+        top: 50px;
+    }
+
+    .info-2 {
+        top: 80px;
+    }
+
+    .info-2 .name {
+        font-size: 40px;
+    }
+
+    .info-2 .text {
+        font-size: 10px;
+    }
+
+    .info-2 .text-1 {
+        font-size: 18px;
+    }
+
+    .info-3 {
+        top: 140px;
+        gap: 10px;
+    }
+
+    .info-3 .text-1, .info-3 .text-2 {
+        font-size: 12px;
+    }
+
+    .image {
+        top: 80px;
+    }
+
+    .image img {
+        height: 50px;
+        width: 50px;
+    }
+}
