@@ -6,9 +6,9 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from organizations.api import get_organizations
-
+import logging
 from openedx.core.djangolib.js_utils import dump_js_escaped_json
-
+from eox_tenant.models import *
 
 class OrganizationListView(View):
     """View rendering organization list as json.
@@ -37,7 +37,7 @@ class OrganizationListView(View):
 
         try:
             tenant_config = TenantConfig.objects.get_configurations(domain=normalized_host)
-            allowed_orgs = cd _config.get("lms_configs", {}).get("course_org_filter", [])
+            allowed_orgs = tenant_config.get("lms_configs", {}).get("course_org_filter", [])
             logging.info(f"[Tenant Orgs] Allowed orgs for {normalized_host}: {allowed_orgs}")
 
             if allowed_orgs:

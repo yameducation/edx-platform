@@ -122,6 +122,8 @@ from ..utils import (
 )
 from .component import ADVANCED_COMPONENT_TYPES
 
+from eox_tenant.models import *
+
 log = logging.getLogger(__name__)
 User = get_user_model()
 
