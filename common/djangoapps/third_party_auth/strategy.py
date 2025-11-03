@@ -11,7 +11,7 @@ from .models import OAuth2ProviderConfig
 from .pipeline import AUTH_ENTRY_CUSTOM
 from .pipeline import get as get_pipeline_from_request
 from .provider import Registry
-
+import logging
 
 class ConfigurationModelStrategy(DjangoStrategy):
     """
@@ -30,7 +30,32 @@ class ConfigurationModelStrategy(DjangoStrategy):
             setting 'name' is configured via LTIProviderConfig.
         """
         if isinstance(backend, OAuthAuth):
-            provider_config = OAuth2ProviderConfig.current(backend.name)
+            from openedx.core.djangoapps.theming.helpers import get_current_request
+            from common.djangoapps.third_party_auth.models import OAuth2ProviderConfig
+            from django.contrib.sites.shortcuts import get_current_site
+            from django.conf import settings
+
+            request = get_current_request()
+            if request:
+                current_site = get_current_site(request)
+                current_site_id = current_site.id
+            else:
+                current_site_id = settings.SITE_ID
+
+            try:
+                # FIXED: Filter by backend name, site_id, and enabled
+                provider_config = OAuth2ProviderConfig.objects.filter(
+                    backend_name=backend.name,
+                    site_id=current_site_id,
+                    enabled=True
+                ).last()
+                logging.info(f'STRATEGY FIX: Found provider {provider_config.id} for site {provider_config.site_id}')
+
+            except OAuth2ProviderConfig.DoesNotExist:
+                logging.warning(f'STRATEGY FIX: No provider found for backend {backend.name}, site {current_site_id}')
+                # Fallback to original behavior
+                provider_config = OAuth2ProviderConfig.current(backend.name)
+
             if not provider_config.enabled_for_current_site:
                 raise Exception("Can't fetch setting of a disabled backend/provider.")
             try:
