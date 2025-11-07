@@ -552,13 +552,10 @@ def get_url(name):
         if site_config:
             logging.info(f"Site ID: {site_config.site.id}")
             logging.info(f"Site Domain: {site_config.site.domain}")
-            logging.info(f"Full Configuration JSON: {site_config.site_values}")
         else:
             logging.info("No site configuration found for this domain.")
     except Exception as e:
         logging.error(f"Error fetching site configuration: {e}")
-    logging.info("====================================")
-    logging.info(f'configuration_urllllllllllll {configuration_helpers}')
     configuration_url = get_configuration_url(name)
     logging.info(f'configuration_urllllllllllll {configuration_url}')
     if configuration_url and configuration_url != EMPTY_URL and configuration_url != '#':
@@ -662,7 +659,7 @@ def get_home_url():
     """
     Return Dashboard page url
     """
-    logging.info(f'settings attrrr {dir(settings)}  {settings.MY_YAM_URL}')
+    logging.info(f'settings attrrr home url   {settings.MY_YAM_URL}')
     try:
         return settings.MY_YAM_URL
     except:

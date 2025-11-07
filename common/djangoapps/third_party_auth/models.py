@@ -356,8 +356,8 @@ class ProviderConfig(ConfigurationModel):
         Determines if the provider is able to be used with the current site.
         """
         logging.info(f'site Id Self {self.site_id} And Current Site Object.ID {Site.objects.get_current(get_current_request()).id}')
-        return self.enabled and self.site_id == Site.objects.get_current(get_current_request()).id
-        #return self.enabled
+        #return self.enabled and self.site_id == Site.objects.get_current(get_current_request()).id
+        return self.enabled
 
 
 class OAuth2ProviderConfig(ProviderConfig):
