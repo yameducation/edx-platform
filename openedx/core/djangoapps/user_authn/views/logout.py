@@ -18,6 +18,7 @@ from openedx.core.djangoapps.user_authn.cookies import delete_logged_in_cookies
 from openedx.core.djangoapps.user_authn.utils import is_safe_login_or_logout_redirect
 from common.djangoapps.third_party_auth import pipeline as tpa_pipeline
 import logging
+from django.db import connections
 
 class LogoutView(TemplateView):
     """
@@ -30,13 +31,17 @@ class LogoutView(TemplateView):
     template_name = 'logout.html'
 
     # Keep track of the page to which the user should ultimately be redirected.
-    if getattr(settings, 'MY_YAM_URL', None):
-        logout_url = getattr(settings, 'MY_YAM_URL').rstrip('/') + '/logout'
-    else:
-        logout_url = '/'
-    logging.info(f'[Logout Url Changed here] {logout_url}')
-    default_target =  logout_url
     tpa_logout_url = ''
+
+    def get_default_target(self):
+        """
+        Resolve default logout target at REQUEST TIME, not startup time.
+        """
+        logging.info(f" {connections['default'].settings_dict['NAME']}")
+        base = getattr(settings, 'MY_YAM_URL', '/')
+        target = base.rstrip('/') + '/logout'
+        logging.info("[LOGOUT][DEFAULT_TARGET][RUNTIME] %s", target)
+        return target
 
     def post(self, request, *args, **kwargs):
         """
@@ -44,6 +49,7 @@ class LogoutView(TemplateView):
 
         TODO: remove GET as an allowed method, and update all callers to use POST.
         """
+        logging.info("[LOGOUT][POST] proxied to GET")
         return self.get(request, *args, **kwargs)
 
     @property
@@ -55,6 +61,7 @@ class LogoutView(TemplateView):
         """
         target_url = self.request.GET.get('redirect_url') or self.request.GET.get('next')
 
+        logging.info("[LOGOUT][TARGET] raw_target=%s", target_url)
         #  Some third party apps do not build URLs correctly and send next query param without URL-encoding, resulting
         #  all plus('+') signs interpreted as space(' ') in the process of URL-decoding
         #  for example if we hit on:
@@ -67,28 +74,61 @@ class LogoutView(TemplateView):
         if target_url:
             target_url = bleach.clean(parse.unquote(parse.quote_plus(target_url)))
 
+        #target_url = "https://t3.my.leadingafrica.yamedu.testbot.xyz"
+        #logging.info(f'target_url is like this {target_url}')
         use_target_url = target_url and is_safe_login_or_logout_redirect(
             redirect_to=target_url,
             request_host=self.request.get_host(),
             dot_client_id=self.request.GET.get('client_id'),
             require_https=self.request.is_secure(),
         )
-        return target_url if use_target_url else self.default_target
+        final_target = target_url if use_target_url else self.get_default_target()
+
+        logging.info(
+            "[LOGOUT][TARGET] use_target=%s final_target=%s",
+            use_target_url,
+            final_target
+        )
+        #return target_url if use_target_url else self.default_target
+        return final_target
 
     def dispatch(self, request, *args, **kwargs):
         # We do not log here, because we have a handler registered to perform logging on successful logouts.
 
+        logging.info(
+            "[LOGOUT][DISPATCH] method=%s path=%s full_path=%s host=%s referer=%s",
+            request.method,
+            request.path,
+            request.get_full_path(),
+            request.get_host(),
+            request.META.get("HTTP_REFERER")
+        )
+
+        logging.info(
+            "[LOGOUT][DISPATCH] cookies_before=%s",
+            list(request.COOKIES.keys())
+        )
         # Get third party auth provider's logout url
         self.tpa_logout_url = tpa_pipeline.get_idp_logout_url_from_running_pipeline(request)
+        logging.info(
+            "[LOGOUT][TPA] TPA_AUTOMATIC_LOGOUT_ENABLED=%s tpa_logout_url=%s",
+            getattr(settings, 'TPA_AUTOMATIC_LOGOUT_ENABLED', False),
+            self.tpa_logout_url
+        )
 
         logout(request)
-
+        logging.info("[LOGOUT][DJANGO] django logout() executed")
         response = super().dispatch(request, *args, **kwargs)
 
         # Clear the cookie used by the edx.org marketing site
         delete_logged_in_cookies(response)
 
         mark_user_change_as_expected(None)
+        logging.info(
+            "[LOGOUT][REDIRECT_CHECK] automatic=%s tpa_present=%s",
+            getattr(settings, 'TPA_AUTOMATIC_LOGOUT_ENABLED', False),
+            bool(self.tpa_logout_url)
+        )
 
         # Redirect to tpa_logout_url if TPA_AUTOMATIC_LOGOUT_ENABLED is set to True and if
         # tpa_logout_url is configured.
@@ -98,8 +138,12 @@ class LogoutView(TemplateView):
         # back to <LMS>/logout after logging out of the TPA.
         if getattr(settings, 'TPA_AUTOMATIC_LOGOUT_ENABLED', False):
             if self.tpa_logout_url:
+                logging.info(
+                    "[LOGOUT][REDIRECT] redirecting to TPA logout=%s",
+                    self.tpa_logout_url
+                )
                 return redirect(self.tpa_logout_url)
-
+        logging.info("[LOGOUT][RESPONSE] returning logout.html")
         return response
 
     def _build_logout_url(self, url):
@@ -116,6 +160,7 @@ class LogoutView(TemplateView):
         query_params = parse_qs(query_string)
         query_params['no_redirect'] = 1
         new_query_string = urlencode(query_params, doseq=True)
+        logging.info("[LOGOUT][IDA] built logout url=%s", urlunsplit((scheme, netloc, path, new_query_string, fragment)))
         return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
     def _is_enterprise_target(self, url):
@@ -138,10 +183,15 @@ class LogoutView(TemplateView):
         """
         tpa_automatic_logout_enabled = getattr(settings, 'TPA_AUTOMATIC_LOGOUT_ENABLED', False)
         if (
-            bool(target == self.default_target and self.tpa_logout_url) and
+            bool(target == self.get_default_target() and self.tpa_logout_url) and
             settings.LEARNER_PORTAL_URL_ROOT in referrer and
             not tpa_automatic_logout_enabled
         ):
+            logging.info(
+              "[LOGOUT][TPA_LINK] target=%s referrer=%s show=%s",
+              target,
+              referrer,
+            )
             return True
 
         return False
@@ -152,6 +202,8 @@ class LogoutView(TemplateView):
         # Create a list of URIs that must be called to log the user out of all of the IDAs.
         uris = []
 
+        logging.info("[LOGOUT][IDA] oauth_client_ids=%s", self.oauth_client_ids)
+        logging.info("[LOGOUT][IDA] settings.IDA_LOGOUT_URI_LIST=%s", settings.IDA_LOGOUT_URI_LIST)
         # Add the logout URIs for IDAs that the user was logged into (according to the session).  This line is specific
         # to DOP.
         uris += Application.objects.filter(client_id__in=self.oauth_client_ids,
@@ -167,10 +219,19 @@ class LogoutView(TemplateView):
         for uri in uris:
             # Only include the logout URI if the browser didn't come from that IDA's logout endpoint originally,
             # avoiding a double-logout.
+            logging.info("[LOGOUT][IDA] evaluating uri=%s referrer=%s", uri, referrer)
             if not referrer or (referrer and not uri.startswith(referrer)):
                 logout_uris.append(self._build_logout_url(uri))
-
+            else:
+                logging.info("[LOGOUT][IDA] skipped uri=%s (referrer match)", uri)
         target = self.target
+        logging.info(f"target in frontend pass {target}")
+        logging.info(
+            "[LOGOUT][FINAL] target=%s logout_uris=%s tpa_logout_url=%s",
+            target,
+            logout_uris,
+            self.tpa_logout_url
+        )
         context.update({
             'target': target,
             'logout_uris': logout_uris,
