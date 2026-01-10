@@ -854,6 +854,8 @@ MIDDLEWARE = [
     # Resets the request cache.
     'edx_django_utils.cache.middleware.RequestCacheMiddleware',
 
+    'eox_tenant.middleware.CurrentSiteDatabase',
+    'eox_tenant.middleware.CurrentSiteMiddleware',
     # Various monitoring middleware
     'edx_django_utils.monitoring.CookieMonitoringMiddleware',
     'edx_django_utils.monitoring.DeploymentMonitoringMiddleware',
@@ -928,7 +930,7 @@ MIDDLEWARE = [
     # Handles automatically storing user ids in django-simple-history tables when possible.
     'simple_history.middleware.HistoryRequestMiddleware',
 
-    'eox_tenant.middleware.CurrentSiteDatabase',
+    #'eox_tenant.middleware.CurrentSiteDatabase',
 
 
     # This must be last so that it runs first in the process_response chain
